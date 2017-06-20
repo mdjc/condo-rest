@@ -36,8 +36,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
 			.and()
 			.authorizeRequests()
-				.antMatchers("/managerurl").hasAuthority("MANAGER")
-				.antMatchers("/residenturl").hasAuthority("RESIDENT")
 				.anyRequest().authenticated()		
 				.and()
 			.cors()

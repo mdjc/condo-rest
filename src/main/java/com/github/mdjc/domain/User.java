@@ -1,20 +1,20 @@
 package com.github.mdjc.domain;
 
+import com.github.mdjc.commons.args.Arguments;
+
 public class User {
 	private final String username;
 	private final String password;
 	private final Role role;
-	private final String apartment;
-	
-	public User(String username, String password, Role role, String apartment) {
-		this.username = username;
+
+	public User(String username, String password, Role role) {
+		this.username = Arguments.checkBlank(username);
 		this.password = password;
 		this.role = role;
-		this.apartment = apartment;
 	}
 	
-	public User(String username, Role role, String apartment) {
-		this(username, "", role, apartment);
+	public User(String username, Role role) {
+		this(username, "", role);
 	}
 
 	public String getUsername() {
@@ -29,13 +29,8 @@ public class User {
 		return role;
 	}
 
-	public String getApartment() {
-		return apartment;
-	}
-	
 	@Override
 	public boolean equals(Object other) {
-		if (other == null) return false;
 		if (!(other instanceof User)) return false;
 		
 		return this.username.equalsIgnoreCase(((User) other).username);

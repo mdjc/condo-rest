@@ -1,28 +1,37 @@
 package com.github.mdjc.domain;
 
+import com.github.mdjc.commons.args.Arguments;
+
 public class Building {
+	private final long id;
 	private final String name;
-	private final String address;
+	private final User manager;
 	
-	public Building(String name, String address) {
-		this.name = name;
-		this.address = address;
+	public Building(long id, String name, User manager) {
+		this.id = Arguments.checkPositive(id);
+		this.name = Arguments.checkBlank(name);
+		this.manager = Arguments.checkNull(manager);
+	}
+	
+	public long getId() {
+		return id;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public String getAddress() {
-		return address;
+	public User getManager() {
+		return manager;
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
-		if (other == null) return false;
-		if (!(other instanceof Building)) return false;
+		if (!(other instanceof Building)) {
+			return false;
+		}
 		
-		return this.name.equals(((Building)other).name);
+		return this.id == ((Building)other).id;
 	}
 	
 	@Override

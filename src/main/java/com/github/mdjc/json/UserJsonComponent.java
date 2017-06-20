@@ -17,7 +17,6 @@ public class UserJsonComponent {
 				throws IOException {	
 			jgen.writeStringField("name", value.getUsername());
 			jgen.writeStringField("role", value.getRole().toString());
-			jgen.writeStringField("apartment",value.getApartment());
 		}		
 	}
 }
