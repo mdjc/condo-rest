@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,5 +62,25 @@ public class BuildingRepositoryTest {
 		User user = new User("unexistent", Role.MANAGER);
 		assertTrue(repository.getAllByUser(user).isEmpty());
 	}
-
+	
+	@Test
+	public void testGetStatsById_givenValidId_shouldReturnStatistics() {
+		BuildingStats actual = repository.getStatsById(1);
+		Building expectedBuilding = new Building(1, "Shadai I", new User("mirna", Role.MANAGER));
+		BuildingStats expected = new BuildingStats(expectedBuilding, 4, 2, 100);
+		
+		assertEquals(expectedBuilding, actual.getBuilding());
+		assertEquals(expectedBuilding.getName(), actual.getBuilding().getName());
+		assertEquals(expectedBuilding.getManager().getUsername(), actual.getBuilding().getManager().getUsername());
+		assertEquals(expected.getApartmentCount(), actual.getApartmentCount());
+		assertEquals(expected.getResidentCount(), actual.getResidentCount());
+		assertTrue(Math.abs(expected.getBalance() - actual.getBalance()) == 0);
+		
+	}
+	
+	
+	@Test(expected=NoSuchElementException.class)
+	public void testGetStatsById_givenInvalidId_shouldThrowException() {
+		repository.getStatsById(69);		
+	}
 }
