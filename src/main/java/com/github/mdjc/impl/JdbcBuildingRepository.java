@@ -57,7 +57,7 @@ public class JdbcBuildingRepository implements BuildingRepository {
 					+ " from buildings b join users u on u.id = b.manager " 
 					+ " where b.id = ?", this::statisticsMapper, id);
 		} catch (EmptyResultDataAccessException e) {
-			throw new NoSuchElementException();
+			throw new NoSuchElementException("Unexistent Building");
 		}
 	}
 

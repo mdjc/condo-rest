@@ -5,8 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.mdjc.domain.BuildingRepository;
+import com.github.mdjc.domain.PaymentRepository;
 import com.github.mdjc.domain.UserRepository;
 import com.github.mdjc.impl.JdbcBuildingRepository;
+import com.github.mdjc.impl.JdbcPaymentRepository;
 import com.github.mdjc.impl.JdbcUserRepository;
 
 @Configuration
@@ -19,5 +21,10 @@ public class BeansConfig {
 	@Bean
 	public BuildingRepository buildingRepository(JdbcTemplate template) {
 		return new JdbcBuildingRepository(template);
+	}
+	
+	@Bean
+	public PaymentRepository paymentRepository(JdbcTemplate template) {
+		return new JdbcPaymentRepository(template);
 	}
 }

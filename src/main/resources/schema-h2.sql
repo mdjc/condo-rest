@@ -13,7 +13,7 @@ create table buildings (
 	foreign	key (manager) references users(id)
 );
 
-create table apartments(
+create table apartments (
 	id int not null auto_increment primary key,
 	name varchar(20) not null,
 	building int not null,
@@ -22,5 +22,16 @@ create table apartments(
 	foreign key(resident) references users(id)	
 );
 
+create table payments (
+	id int not null auto_increment primary key,
+	apartment int not null,
+	amount double not null,
+	payment_method varchar(20),
+	created_on date not null,
+	created_by int not null,
+	status varchar(20) not null, 
+	foreign key(created_by) references users(id),
+	foreign key(apartment) references apartments(id)
+);
 
 

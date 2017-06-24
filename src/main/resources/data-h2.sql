@@ -19,3 +19,25 @@ insert into apartments (name, building, resident) values ('1D', (select id from 
 insert into apartments (name, building, resident) values ('1', (select id from buildings where name = 'Loring  Place 2333'), (select id from users where username='john'));
 insert into apartments (name, building, resident) values ('2', (select id from buildings where name = 'Loring  Place 2333'), (select id from users where username='mary'));
 insert into apartments (name, building, resident) values ('25F', (select id from buildings where name = 'Mira Flores IV'), (select id from users where username='mary'));
+
+insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
+	values((select id from apartments where name='1'), 5.55, 'CHECK', '2017-6-15', (select id from users where username='john'), 'PENDING'
+);
+
+insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
+	values((select id from apartments where name='2'), 10, 'CHECK', '2017-5-15', (select id from users where username='mary'), 'PENDING'
+);
+
+insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
+	values((select id from apartments where name='1A'), 10, 'CASH', '2017-6-15', (select id from users where username='virgi'), 'PENDING'
+);
+
+insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
+	values((select id from apartments where name='1D'), 10, 'TRANSFER', '2017-6-16', (select id from users where username='aldo'), 'VALIDATED'
+);
+
+insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
+	values((select id from apartments where name='1B'), 30, 'CASH', '2017-6-16', (select id from users where username='aldo'), 'PENDING'
+);
+
+
