@@ -4,5 +4,6 @@ import java.util.List;
 
 public interface BuildingRepository {
 	List<Building> getAllByUser(User user);
-	BuildingStats getStatsById(long id);
+	BuildingStats getStatsByBuildingId(long id);
+	Building getBy(long id);
 }

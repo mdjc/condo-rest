@@ -38,27 +38,38 @@ public class JdbcBuildingRepository implements BuildingRepository {
 				this::mapper, user.getUsername());
 	}
 
-	private Building mapper(ResultSet rs, int rowNum) throws SQLException {
-		return new Building(rs.getLong("id"), rs.getString("name"), new User(rs.getString("manager"), Role.MANAGER));
-	}
-
-	private BuildingStats statisticsMapper(ResultSet rs, int rowNum) throws SQLException {
-		return new BuildingStats(mapper(rs, rowNum), rs.getInt("apartmentCount"), rs.getInt("residentCount"),
-				rs.getDouble("balance"));
-
-	}
-
 	@Override
-	public BuildingStats getStatsById(long id) {
+	public BuildingStats getStatsByBuildingId(long buildingId) {
 		try {
-			return template.queryForObject("select b.id as id, b.name as name, b.balance, u.username as manager, "
-					+ " (select count(*) from apartments where building = b.id) as apartmentCount, "
-					+ " (select count(*) from apartments where building = b.id and resident is null) as residentCount"
-					+ " from buildings b join users u on u.id = b.manager " 
-					+ " where b.id = ?", this::statisticsMapper, id);
+			return template.queryForObject(
+					"select b.id as id, b.name as name, b.balance, u.username as manager, "
+							+ " (select count(*) from apartments where building = b.id) as apartmentCount, "
+							+ " (select count(*) from apartments where building = b.id and resident is null) as residentCount"
+							+ " from buildings b join users u on u.id = b.manager " + " where b.id = ?",
+					this::statsMapper, buildingId);
 		} catch (EmptyResultDataAccessException e) {
 			throw new NoSuchElementException("Unexistent Building");
 		}
 	}
 
+	private Building mapper(ResultSet rs, int rowNum) throws SQLException {
+		return new Building(rs.getLong("id"), rs.getString("name"), new User(rs.getString("manager"), Role.MANAGER));
+	}
+
+	private BuildingStats statsMapper(ResultSet rs, int rowNum) throws SQLException {
+		return new BuildingStats(rs.getInt("apartmentCount"), rs.getInt("residentCount"), rs.getDouble("balance"));
+
+	}
+
+	@Override
+	public Building getBy(long id) {
+		try {
+			return template.queryForObject( 
+				"select b.id as id, b.name as name, u.username as manager from buildings b"
+				+ " join users u on u.id = b.manager where b.id=? ", this::mapper, id);
+
+		} catch(EmptyResultDataAccessException e) {
+			throw new NoSuchElementException("Unexistent Building");
+		}
+	}
 }

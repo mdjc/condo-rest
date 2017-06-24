@@ -50,7 +50,7 @@ public class BuildingRepositoryTest {
 
 	@Test
 	public void testGetAllByUser_givenResident_shouldReturnSeveralBuildings() {
-		User user = new User("mary", Role.RESIDENT);
+		User user = new User("luis", Role.MANAGER);
 		List<Building> expected = Arrays.asList(new Building(2, "Loring  Place 2333", user),
 				new Building(3, "Mira Flores IV", user));
 		List<Building> actual = repository.getAllByUser(user);
@@ -64,23 +64,33 @@ public class BuildingRepositoryTest {
 	}
 	
 	@Test
-	public void testGetStatsById_givenValidId_shouldReturnStatistics() {
-		BuildingStats actual = repository.getStatsById(1);
-		Building expectedBuilding = new Building(1, "Shadai I", new User("mirna", Role.MANAGER));
-		BuildingStats expected = new BuildingStats(expectedBuilding, 4, 2, 100);
+	public void testGetStatsByBuildingId_givenValidId_shouldReturnStatistics() {
+		BuildingStats actual = repository.getStatsByBuildingId(1);
+		BuildingStats expected = new BuildingStats(4, 2, 100);
 		
-		assertEquals(expectedBuilding, actual.getBuilding());
-		assertEquals(expectedBuilding.getName(), actual.getBuilding().getName());
-		assertEquals(expectedBuilding.getManager().getUsername(), actual.getBuilding().getManager().getUsername());
 		assertEquals(expected.getApartmentCount(), actual.getApartmentCount());
 		assertEquals(expected.getResidentCount(), actual.getResidentCount());
 		assertTrue(Math.abs(expected.getBalance() - actual.getBalance()) == 0);
-		
 	}
 	
 	
 	@Test(expected=NoSuchElementException.class)
-	public void testGetStatsById_givenInvalidId_shouldThrowException() {
-		repository.getStatsById(69);		
+	public void testGetStatsByBuildingId_givenInvalidId_shouldThrowException() {
+		repository.getStatsByBuildingId(69);		
+	}
+	
+	@Test
+	public void testGetBy_givenValidId_shouldReturnBuilding() {
+		User user = new User("luis", Role.MANAGER);
+		Building expected = new Building(3, "Mira Flores IV", user);
+		Building actual = repository.getBy(3);
+		assertEquals(expected, actual);
+		assertEquals(expected.getName(), actual.getName());
+		assertEquals(expected.getManager(), actual.getManager());
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void testGetBy_givenInvalidId_shouldThrowException() {
+		repository.getBy(69);		
 	}
 }

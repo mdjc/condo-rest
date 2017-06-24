@@ -1,20 +1,14 @@
 package com.github.mdjc.domain;
 
 public class BuildingStats {
-	private final Building building;
 	private final int apartmentCount;
 	private final int residentCount;
 	private final double balance;
 	
-	public BuildingStats(Building building, int apartmentCount, int residentCount, double balance) {
-		this.building = building;
+	public BuildingStats(int apartmentCount, int residentCount, double balance) {
 		this.apartmentCount = apartmentCount;
 		this.residentCount = residentCount;
 		this.balance = balance;
-	}
-
-	public Building getBuilding() {
-		return building;
 	}
 
 	public int getApartmentCount() {

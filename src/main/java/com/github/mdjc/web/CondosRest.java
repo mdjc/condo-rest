@@ -35,11 +35,18 @@ public class CondosRest {
 		map.put("buildings", buildingRepo.getAllByUser((User) auth.getPrincipal()));
 		return map;
 	}
+	
+	@GetMapping(path = "/buildings/{buildingId}")
+	public Map<String, Building> getBuilding(@PathVariable long buildingId) {
+		Map<String, Building> map = new HashMap<>();
+		map.put("building", buildingRepo.getBy(buildingId));
+		return map;
+	}
 
-	@GetMapping(path = "/buildingStats")
-	public Map<String, BuildingStats> buildingStats(@RequestParam long buildingId) {
+	@GetMapping(path = "/buildings/{buildingId}/stats")
+	public Map<String, BuildingStats> buildingStats(@PathVariable long buildingId) {
 		Map<String, BuildingStats> map = new HashMap<>();
-		map.put("stats", buildingRepo.getStatsById(buildingId));
+		map.put("stats", buildingRepo.getStatsByBuildingId(buildingId));
 		return map;
 	}
 
