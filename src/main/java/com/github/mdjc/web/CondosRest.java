@@ -19,6 +19,7 @@ import com.github.mdjc.domain.BuildingStats;
 import com.github.mdjc.domain.PaginationCriteria;
 import com.github.mdjc.domain.Payment;
 import com.github.mdjc.domain.PaymentRepository;
+import com.github.mdjc.domain.PaymentStats;
 import com.github.mdjc.domain.User;
 
 @RestController
@@ -51,7 +52,7 @@ public class CondosRest {
 	}
 
 	@GetMapping(path = "/buildings/{buildingId}/payments")
-	public Map<String, List<Payment>> userBuildings(@PathVariable long buildingId, 
+	public Map<String, List<Payment>> buildingPayments(@PathVariable long buildingId, 
 			@RequestParam("from")
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from, 
 			@RequestParam("to") 
@@ -63,6 +64,19 @@ public class CondosRest {
 		
 		Map<String, List<Payment>> map = new HashMap<>();
 		map.put("payments", paymentRepo.findby(buildingId, from, to, pagCriteria));
+		return map;
+	}
+	
+	
+	@GetMapping(path = "/buildings/{buildingId}/payments/stats")
+	public Map<String, PaymentStats> buildingPaymentsStats(@PathVariable long buildingId, 
+			@RequestParam("from")
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from, 
+			@RequestParam("to") 
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+		
+		Map<String, PaymentStats> map = new HashMap<>();
+		map.put("stats", paymentRepo.getStatsBy(buildingId, from, to));
 		return map;
 	}
 }

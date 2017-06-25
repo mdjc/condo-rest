@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface PaymentRepository {
 	public List<Payment> findby(long buildingId, LocalDate from, LocalDate to, PaginationCriteria options);
+	public PaymentStats getStatsBy(long buildingId, LocalDate from, LocalDate to);
 }

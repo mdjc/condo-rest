@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,6 +80,18 @@ public class PaymentRepositoryTest {
 		List<Payment> actual = repository.findby(2, LocalDate.of(2017, 5, 15), LocalDate.of(2017, 8, 1),
 				new PaginationCriteria(1, 1, PaginationCriteria.SortingOrder.DESC));
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testGetStatsBy_givenValidBuildingId() {
+		PaymentStats expected = new PaymentStats(2, 1, 0, 10);
+		PaymentStats actual = repository.getStatsBy(1, LocalDate.of(2016, 2, 23), LocalDate.of(2017, 10, 23));
+		assertEquals(expected, actual);
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void testGetStatsBy_givenInvalidBuildingId() {
+		repository.getStatsBy(69, LocalDate.of(2016, 2, 23), LocalDate.of(2017, 10, 23));
 	}
 
 }
