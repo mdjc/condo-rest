@@ -50,9 +50,9 @@ public class BuildingRepositoryTest {
 
 	@Test
 	public void testGetAllByUser_givenResident_shouldReturnSeveralBuildings() {
-		User user = new User("luis", Role.MANAGER);
-		List<Building> expected = Arrays.asList(new Building(2, "Loring  Place 2333", user),
-				new Building(3, "Mira Flores IV", user));
+		User user = new User("mary", Role.RESIDENT);
+		List<Building> expected = Arrays.asList(new Building(2, "Loring  Place 2333",  new User("mirna", Role.MANAGER)),
+				new Building(3, "Mira Flores IV",  new User("luis", Role.MANAGER)));
 		List<Building> actual = repository.getAllByUser(user);
 		assertEquals(expected, actual);
 	}
