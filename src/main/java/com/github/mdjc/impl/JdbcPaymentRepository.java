@@ -48,11 +48,13 @@ public class JdbcPaymentRepository implements PaymentRepository {
 							+ " count(case when status = ? then 1 end) AS validated_count,"
 							+ " count(case when status = ? then 1  end) AS rejected_count,"
 							+ " sum(CASE WHEN status = ? then amount else 0 end) as validated_sum,"
-							+ " count(distinct a.building) as building_found"
-							+ " FROM apartments a left join payments p on p.apartment = a.id "
-							+ " where a.building = ? and p.created_on >= ? and p.created_on <= ?",
+							+ " count(distinct b.id) as building_found"
+							+ " from buildings b"
+							+ " left join apartments a on a.building = b.id"
+							+ " left join payments p on p.apartment = a.id and p.created_on >= ? and p.created_on <= ?"
+							+ " where b.id = ?",
 					this::statsMapper, PaymentStatus.PENDING.toString(), PaymentStatus.VALIDATED.toString(),
-					PaymentStatus.REJECTED.toString(), PaymentStatus.VALIDATED.toString(), buildingId, from, to);
+					PaymentStatus.REJECTED.toString(), PaymentStatus.VALIDATED.toString(), from, to, buildingId);
 		
 	}
 
