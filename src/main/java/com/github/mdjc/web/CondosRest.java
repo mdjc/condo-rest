@@ -18,6 +18,7 @@ import com.github.mdjc.domain.BuildingRepository;
 import com.github.mdjc.domain.BuildingStats;
 import com.github.mdjc.domain.Outlay;
 import com.github.mdjc.domain.OutlayRepository;
+import com.github.mdjc.domain.OutlayStats;
 import com.github.mdjc.domain.PaginationCriteria;
 import com.github.mdjc.domain.Payment;
 import com.github.mdjc.domain.PaymentRepository;
@@ -96,6 +97,18 @@ public class CondosRest {
 		PaginationCriteria pagCriteria = new PaginationCriteria(offset, limit,
 				PaginationCriteria.SortingOrder.valueOf(order.toUpperCase()));
 		map.put("outlays", outlayRepo.findBy(buildingId, from, to, pagCriteria));
+		return map;
+	}
+	
+	@GetMapping(path = "/buildings/{buildingId}/outlays/stats")
+	public Map<String, OutlayStats> buildingOutlayStats(@PathVariable long buildingId, 
+			@RequestParam("from")
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from, 
+			@RequestParam("to") 
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+		
+		Map<String, OutlayStats> map = new HashMap<>();
+		map.put("stats", outlayRepo.getStatsBy(buildingId, from, to));
 		return map;
 	}
 }

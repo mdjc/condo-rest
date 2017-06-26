@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface OutlayRepository {
 	List<Outlay> findBy(long buildingId, LocalDate from, LocalDate to, PaginationCriteria options);
+	OutlayStats getStatsBy(long buildingId, LocalDate from, LocalDate to);
 }

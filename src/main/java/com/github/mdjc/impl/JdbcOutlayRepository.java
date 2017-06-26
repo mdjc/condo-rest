@@ -4,12 +4,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.mdjc.domain.Outlay;
 import com.github.mdjc.domain.OutlayCategory;
 import com.github.mdjc.domain.OutlayRepository;
+import com.github.mdjc.domain.OutlayStats;
 import com.github.mdjc.domain.PaginationCriteria;
 
 public class JdbcOutlayRepository implements OutlayRepository {
@@ -31,9 +34,24 @@ public class JdbcOutlayRepository implements OutlayRepository {
 				+ options.getLimit(), this::mapper, buildingId, from, to);
 	}
 
+	@Override
+	public OutlayStats getStatsBy(long buildingId, LocalDate from, LocalDate to) {
+		try {
+			return template.queryForObject("select b.id, sum(amount) as sum_amount from buildings b"
+					+ " left join outlays o on o.building = b.id and o.created_on >= ? and o.created_on <= ?"
+					+ " where b.id = ?"
+					+ " group by b.id", this::statsMapper, from, to, buildingId);
+		} catch(EmptyResultDataAccessException e) {
+			throw new NoSuchElementException("Unexistent Building");
+		}
+	}
+	
 	private Outlay mapper(ResultSet rs, int rownum) throws SQLException {
 		return new Outlay(rs.getLong("id"), OutlayCategory.valueOf(rs.getString("category")), rs.getDouble("amount"),
 				rs.getDate("created_on").toLocalDate(), rs.getString("supplier"), rs.getString("comment"));
 	}
-
+	
+	private OutlayStats statsMapper(ResultSet rs, int rownum) throws SQLException {
+		return new OutlayStats(rs.getDouble("sum_amount"));
+	}
 }

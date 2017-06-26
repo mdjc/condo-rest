@@ -38,6 +38,11 @@ insert into payments (apartment, amount, payment_method, created_on, created_by,
 );
 
 insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
+	values((select id from apartments where name='1D'), 10, 'TRANSFER', '2017-6-27', (select id from users where username='aldo'), 'REJECTED'
+);
+
+
+insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
 	values((select id from apartments where name='1B'), 30, 'CASH', '2017-6-16', (select id from users where username='aldo'), 'PENDING'
 );
 
