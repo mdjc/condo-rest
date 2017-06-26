@@ -70,7 +70,7 @@ public class JdbcPaymentRepository implements PaymentRepository {
 
 	private PaymentStats statsMapper(ResultSet rs, int rownum) throws SQLException {
 		if (rs.getInt("building_found") == 0) {
-			throw new NoSuchElementException();
+			throw new NoSuchElementException("Unexistent Building");
 		}
 		
 		return new PaymentStats(rs.getInt("pending_count"), rs.getInt("validated_count"), rs.getInt("rejected_count"),
