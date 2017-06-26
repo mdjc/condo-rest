@@ -35,3 +35,13 @@ create table payments (
 );
 
 
+create table outlays (
+	id int not null auto_increment primary key,
+	amount double not null,
+	category varchar(30),
+	created_on date not null,
+	building int not null,
+	supplier varchar(40) default '',
+	comment varchar(200) default '',
+	foreign key(building) references buildings(id)
+);

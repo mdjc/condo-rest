@@ -9,6 +9,7 @@ insert into users (username, password, role)  values('mary', '$2a$10$nZAnnVBnl0r
 insert into buildings (name, manager, balance) values ('Shadai I', (select id from users where username='mirna' and role='MANAGER'), 100);
 insert into buildings (name, manager, balance) values ('Loring  Place 2333', (select id from users where username='mirna' and role='MANAGER'), 50);
 insert into buildings (name, manager, balance) values ('Mira Flores IV', (select id from users where username='luis' and role='MANAGER'), 220);
+insert into buildings (name, manager, balance) values('Baldwing IV', (select id from users where username='luis' and role='MANAGER'), 0);
 
 insert into apartments (name, building, resident) values ('1A', (select id from buildings where name = 'Shadai I'), (select id from users where username='virgi'));
 insert into apartments (name, building, resident) values ('1B', (select id from buildings where name = 'Shadai I'), null);
@@ -40,4 +41,13 @@ insert into payments (apartment, amount, payment_method, created_on, created_by,
 	values((select id from apartments where name='1B'), 30, 'CASH', '2017-6-16', (select id from users where username='aldo'), 'PENDING'
 );
 
+insert into outlays (amount, category, building, created_on, supplier, comment) values (15, 'SECURITY', 1, '2017-6-16', 'Watchman Dominicana', '');
+
+insert into outlays (amount, category, building, created_on, supplier, comment) values (10, 'REPARATION', 1, '2017-7-16', 'Edenorte', 'Electricity Reparation');
+
+
+insert into outlays (amount, category, building, created_on, supplier, comment) values (10, 'REPARATION', 2, '2017-6-16', 'Edenorte', 'Electricity Reparation');
+
+insert into outlays (amount, category, building, created_on, supplier, comment) values (55.36, 'SECURITY', 2, '2017-6-16', 'Watchman & Asocs', '');
+ 
 

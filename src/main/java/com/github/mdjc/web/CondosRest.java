@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.mdjc.domain.Building;
 import com.github.mdjc.domain.BuildingRepository;
 import com.github.mdjc.domain.BuildingStats;
+import com.github.mdjc.domain.Outlay;
+import com.github.mdjc.domain.OutlayRepository;
 import com.github.mdjc.domain.PaginationCriteria;
 import com.github.mdjc.domain.Payment;
 import com.github.mdjc.domain.PaymentRepository;
@@ -29,6 +31,9 @@ public class CondosRest {
 
 	@Autowired
 	PaymentRepository paymentRepo;
+	
+	@Autowired
+	OutlayRepository outlayRepo;
 
 	@GetMapping(path = "/buildings")
 	public Map<String, List<Building>> userBuildings(Authentication auth) {
@@ -36,7 +41,7 @@ public class CondosRest {
 		map.put("buildings", buildingRepo.getAllByUser((User) auth.getPrincipal()));
 		return map;
 	}
-	
+
 	@GetMapping(path = "/buildings/{buildingId}")
 	public Map<String, Building> getBuilding(@PathVariable long buildingId) {
 		Map<String, Building> map = new HashMap<>();
@@ -60,14 +65,12 @@ public class CondosRest {
 			@RequestParam(defaultValue="0") int offset,
 			@RequestParam(defaultValue = "0") int limit,
 			@RequestParam(defaultValue="ASC") String order) {
-		PaginationCriteria pagCriteria = new PaginationCriteria(offset, limit, PaginationCriteria.SortingOrder.valueOf(order.toUpperCase()));
-		
+		PaginationCriteria pagCriteria = new PaginationCriteria(offset, limit, PaginationCriteria.SortingOrder.valueOf(order.toUpperCase()));		
 		Map<String, List<Payment>> map = new HashMap<>();
 		map.put("payments", paymentRepo.findby(buildingId, from, to, pagCriteria));
 		return map;
 	}
-	
-	
+
 	@GetMapping(path = "/buildings/{buildingId}/payments/stats")
 	public Map<String, PaymentStats> buildingPaymentsStats(@PathVariable long buildingId, 
 			@RequestParam("from")
@@ -77,6 +80,22 @@ public class CondosRest {
 		
 		Map<String, PaymentStats> map = new HashMap<>();
 		map.put("stats", paymentRepo.getStatsBy(buildingId, from, to));
+		return map;
+	}
+
+	@GetMapping(path = "/buildings/{buildingId}/outlays")
+	public Map<String, List<Outlay>> buildingOutlays(@PathVariable long buildingId,
+			@RequestParam("from") 
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+			@RequestParam("to") 
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+			@RequestParam(defaultValue = "0") int offset, 
+			@RequestParam(defaultValue = "0") int limit,
+			@RequestParam(defaultValue = "ASC") String order) {
+		Map<String, List<Outlay>> map = new HashMap<>();
+		PaginationCriteria pagCriteria = new PaginationCriteria(offset, limit,
+				PaginationCriteria.SortingOrder.valueOf(order.toUpperCase()));
+		map.put("outlays", outlayRepo.findBy(buildingId, from, to, pagCriteria));
 		return map;
 	}
 }

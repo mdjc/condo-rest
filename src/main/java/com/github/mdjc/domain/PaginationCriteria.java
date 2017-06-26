@@ -13,6 +13,10 @@ public class PaginationCriteria {
 		this.limit = limit == 0? DEFAULT_LIMIT : limit;
 		this.sortingOrder = sortingOrder;
 	}
+	
+	public PaginationCriteria(int offset, int limit) {
+		this(offset, limit, SortingOrder.ASC);
+	}
 
 	public int getOffset() {
 		return offset;

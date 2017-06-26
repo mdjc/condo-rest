@@ -31,8 +31,7 @@ public class PaymentRepositoryTest {
 				new Payment(1, new Apartment("1", new User("john", Role.RESIDENT)), 5, PaymentMethod.CHECK,
 						LocalDate.of(2017, 6, 15), new User("john", Role.RESIDENT), PaymentStatus.PENDING));
 
-		List<Payment> actual = repository.findby(2L, LocalDate.of(2017, 5, 1), null,
-				new PaginationCriteria(0, 0, PaginationCriteria.SortingOrder.ASC));
+		List<Payment> actual = repository.findby(2L, LocalDate.of(2017, 5, 1), null, new PaginationCriteria(0, 0));
 		assertEquals(expected, actual);
 	}
 
@@ -43,7 +42,7 @@ public class PaymentRepositoryTest {
 						LocalDate.of(2017, 5, 15), new User("john", Role.RESIDENT), PaymentStatus.PENDING));
 
 		List<Payment> actual = repository.findby(2, LocalDate.of(2017, 5, 1), LocalDate.of(2017, 6, 10),
-				new PaginationCriteria(0, 0, PaginationCriteria.SortingOrder.ASC));
+				new PaginationCriteria(0, 0));
 		assertEquals(expected, actual);
 	}
 
@@ -67,7 +66,7 @@ public class PaymentRepositoryTest {
 						LocalDate.of(2017, 6, 15), new User("john", Role.RESIDENT), PaymentStatus.PENDING));
 
 		List<Payment> actual = repository.findby(2, LocalDate.of(2017, 5, 1), LocalDate.of(2017, 7, 10),
-				new PaginationCriteria(1, 1, PaginationCriteria.SortingOrder.ASC));
+				new PaginationCriteria(1, 1));
 		assertEquals(expected, actual);
 	}
 
@@ -88,8 +87,8 @@ public class PaymentRepositoryTest {
 		PaymentStats actual = repository.getStatsBy(1, LocalDate.of(2016, 2, 23), LocalDate.of(2017, 10, 23));
 		assertEquals(expected, actual);
 	}
-	
-	@Test(expected=NoSuchElementException.class)
+
+	@Test(expected = NoSuchElementException.class)
 	public void testGetStatsBy_givenInvalidBuildingId() {
 		repository.getStatsBy(69, LocalDate.of(2016, 2, 23), LocalDate.of(2017, 10, 23));
 	}
