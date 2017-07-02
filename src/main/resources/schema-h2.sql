@@ -22,15 +22,15 @@ create table apartments (
 	foreign key(resident) references users(id)	
 );
 
-create table payments (
+create table bills (
 	id int not null auto_increment primary key,
 	apartment int not null,
-	amount double not null,
+	description varchar(60) not null,
+	due_amount double not null,
+	due_date date not null,
+	payment_status varchar(25) not null,
 	payment_method varchar(20),
-	created_on date not null,
-	created_by int not null,
-	status varchar(20) not null, 
-	foreign key(created_by) references users(id),
+	last_update_on date not null,
 	foreign key(apartment) references apartments(id)
 );
 

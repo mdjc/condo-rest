@@ -21,38 +21,46 @@ insert into apartments (name, building, resident) values ('1', (select id from b
 insert into apartments (name, building, resident) values ('2', (select id from buildings where name = 'Loring  Place 2333'), (select id from users where username='mary'));
 insert into apartments (name, building, resident) values ('25F', (select id from buildings where name = 'Mira Flores IV'), (select id from users where username='mary'));
 
-insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
-	values((select id from apartments where name='1'), 5.55, 'CHECK', '2017-6-15', (select id from users where username='john'), 'PENDING'
-);
 
-insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
-	values((select id from apartments where name='2'), 10, 'CHECK', '2017-5-15', (select id from users where username='mary'), 'PENDING'
-);
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1'), 'monthly share',  '20', '2017-6-15', 'PAID', 'CHECK', '2017-6-15');
 
-insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
-	values((select id from apartments where name='1A'), 10, 'CASH', '2017-6-15', (select id from users where username='virgi'), 'PENDING'
-);
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1'), 'monthly share',  5.55, '2017-6-15',  'PENDING', null, '2017-6-15');
 
-insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
-	values((select id from apartments where name='1D'), 10, 'TRANSFER', '2017-6-16', (select id from users where username='aldo'), 'VALIDATED'
-);
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1D'), 'monthly share',  '20', '2017-6-15', 'PAID', 'CHECK', '2017-6-15');
 
-insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
-	values((select id from apartments where name='1D'), 10, 'TRANSFER', '2017-6-27', (select id from users where username='aldo'), 'REJECTED'
-);
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1A'), 'monthly share',  5.55, '2017-6-15',  'PENDING', null, '2017-6-15');
 
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='2'), 'monthly share',  10, '2017-5-15', 'PENDING', null, '2017-5-15');
 
-insert into payments (apartment, amount, payment_method, created_on, created_by, status) 
-	values((select id from apartments where name='1B'), 30, 'CASH', '2017-6-16', (select id from users where username='aldo'), 'PENDING'
-);
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1A'), 'monthly share',  10, '2017-6-15', 'PENDING', null, '2017-6-15');
+
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1D'), 'monthly share',  10, '2017-6-16', 'PAID', 'TRANSFER', '2017-6-16');
+
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1D'), 'monthly share',  10, '2017-6-27', 'REJECTED', 'TRANSFER', '2017-6-27');
+
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1A'), 'monthly share',  10, '2017-7-1', 'PAID', 'TRANSFER', '2017-7-1');
+
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1D'), 'monthly share',  10, '2017-7-1', 'PENDING', null, '2017-7-1',);
+
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1D'), 'gas bill',  100, '2017-7-1',  'AWAITING_VALIDATION', 'CHECK', '2017-7-1');
+
+insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
+values((select id from apartments where name='1D'), 'gas bill',  200, '2017-7-1',  'REJECTED', 'DEPOSIT', '2017-7-1');
 
 insert into outlays (amount, category, building, created_on, supplier, comment) values (15, 'SECURITY', 1, '2017-6-16', 'Watchman Dominicana', '');
-
-insert into outlays (amount, category, building, created_on, supplier, comment) values (10, 'REPARATION', 1, '2017-7-16', 'Edenorte', 'Electricity Reparation');
-
-
-insert into outlays (amount, category, building, created_on, supplier, comment) values (10, 'REPARATION', 2, '2017-6-16', 'Edenorte', 'Electricity Reparation');
-
+insert into outlays (amount, category, building, created_on, supplier, comment) values (10, 'REPARATION', 1, '2017-7-16', 'Edenorte', 'Reparación Lámpara Pasillo');
+insert into outlays (amount, category, building, created_on, supplier, comment) values (10, 'REPARATION', 2, '2017-6-16', 'Edenorte', 'Reparación Lámpara Principal');
 insert into outlays (amount, category, building, created_on, supplier, comment) values (55.36, 'SECURITY', 2, '2017-6-16', 'Watchman & Asocs', '');
  
 

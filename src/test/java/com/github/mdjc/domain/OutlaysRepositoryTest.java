@@ -29,7 +29,7 @@ public class OutlaysRepositoryTest {
 		List<Outlay> expected = Arrays.asList(
 				new Outlay(1, OutlayCategory.SECURITY, 15, LocalDate.of(2017, 6, 16), "Watchman Dominicana", ""),
 				new Outlay(2, OutlayCategory.REPARATION, 10, LocalDate.of(2017, 7, 16), "Edenorte",
-						"Electricity Reparation"));
+						"Reparación Lámpara Pasillo"));
 		List<Outlay> actual = repository.findBy(1, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 8, 16),
 				new PaginationCriteria(0, 2));
 		testEquals(expected, actual);
@@ -48,7 +48,7 @@ public class OutlaysRepositoryTest {
 		List<Outlay> expected = Arrays.asList(
 				new Outlay(1, OutlayCategory.SECURITY, 15, LocalDate.of(2017, 6, 16), "Watchman Dominicana", ""),
 				new Outlay(2, OutlayCategory.REPARATION, 10, LocalDate.of(2017, 7, 16), "Edenorte",
-						"Electricity Reparation"));
+						"Reparación Lámpara Pasillo"));
 		List<Outlay> actual = repository.findBy(1, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 8, 16),
 				new PaginationCriteria(0, 2));
 		testEquals(expected, actual);
@@ -57,7 +57,7 @@ public class OutlaysRepositoryTest {
 	@Test
 	public void testFindBy_GivenFromToOffsetAndLimitSortDesc_ShouldReturnOneOutlaySortedDesc() {
 		List<Outlay> expected = Arrays.asList(new Outlay(2, OutlayCategory.REPARATION, 10, LocalDate.of(2017, 7, 16),
-				"Edenorte", "Electricity Reparation"));
+				"Edenorte", "Reparación Lámpara Pasillo"));
 		List<Outlay> actual = repository.findBy(1, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 8, 16),
 				new PaginationCriteria(1, 1));
 		testEquals(expected, actual);

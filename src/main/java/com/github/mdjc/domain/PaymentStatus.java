@@ -1,5 +1,5 @@
 package com.github.mdjc.domain;
 
 public enum PaymentStatus {
-	PENDING, VALIDATED, REJECTED
+	PENDING, AWAITING_VALIDATION, PAID, REJECTED
 }

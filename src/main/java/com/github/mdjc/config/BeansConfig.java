@@ -6,11 +6,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.mdjc.domain.BuildingRepository;
 import com.github.mdjc.domain.OutlayRepository;
-import com.github.mdjc.domain.PaymentRepository;
+import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.UserRepository;
 import com.github.mdjc.impl.JdbcBuildingRepository;
 import com.github.mdjc.impl.JdbcOutlayRepository;
-import com.github.mdjc.impl.JdbcPaymentRepository;
+import com.github.mdjc.impl.JdbcBillRepository;
 import com.github.mdjc.impl.JdbcUserRepository;
 
 @Configuration
@@ -26,8 +26,8 @@ public class BeansConfig {
 	}
 	
 	@Bean
-	public PaymentRepository paymentRepository(JdbcTemplate template) {
-		return new JdbcPaymentRepository(template);
+	public BillRepository billRepository(JdbcTemplate template) {
+		return new JdbcBillRepository(template);
 	}
 	
 	@Bean

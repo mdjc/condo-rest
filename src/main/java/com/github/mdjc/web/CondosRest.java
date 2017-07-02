@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.Building;
 import com.github.mdjc.domain.BuildingRepository;
 import com.github.mdjc.domain.BuildingStats;
@@ -20,9 +21,7 @@ import com.github.mdjc.domain.Outlay;
 import com.github.mdjc.domain.OutlayRepository;
 import com.github.mdjc.domain.OutlayStats;
 import com.github.mdjc.domain.PaginationCriteria;
-import com.github.mdjc.domain.Payment;
-import com.github.mdjc.domain.PaymentRepository;
-import com.github.mdjc.domain.PaymentStats;
+import com.github.mdjc.domain.BilltStats;
 import com.github.mdjc.domain.User;
 
 @RestController
@@ -31,7 +30,7 @@ public class CondosRest {
 	BuildingRepository buildingRepo;
 
 	@Autowired
-	PaymentRepository paymentRepo;
+	BillRepository billRepo;
 	
 	@Autowired
 	OutlayRepository outlayRepo;
@@ -57,30 +56,15 @@ public class CondosRest {
 		return map;
 	}
 
-	@GetMapping(path = "/buildings/{buildingId}/payments")
-	public Map<String, List<Payment>> buildingPayments(@PathVariable long buildingId, 
-			@RequestParam("from")
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from, 
-			@RequestParam("to") 
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-			@RequestParam(defaultValue="0") int offset,
-			@RequestParam(defaultValue = "0") int limit,
-			@RequestParam(defaultValue="ASC") String order) {
-		PaginationCriteria pagCriteria = new PaginationCriteria(offset, limit, PaginationCriteria.SortingOrder.valueOf(order.toUpperCase()));		
-		Map<String, List<Payment>> map = new HashMap<>();
-		map.put("payments", paymentRepo.findby(buildingId, from, to, pagCriteria));
-		return map;
-	}
-
-	@GetMapping(path = "/buildings/{buildingId}/payments/stats")
-	public Map<String, PaymentStats> buildingPaymentsStats(@PathVariable long buildingId, 
+	@GetMapping(path = "/buildings/{buildingId}/bills/stats")
+	public Map<String, BilltStats> buildingBillStats(@PathVariable long buildingId, 
 			@RequestParam("from")
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from, 
 			@RequestParam("to") 
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 		
-		Map<String, PaymentStats> map = new HashMap<>();
-		map.put("stats", paymentRepo.getStatsBy(buildingId, from, to));
+		Map<String, BilltStats> map = new HashMap<>();
+		map.put("stats", billRepo.getStatsBy(buildingId, from, to));
 		return map;
 	}
 
