@@ -4,11 +4,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.github.mdjc.domain.BuildingRepository;
+import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.OutlayRepository;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.UserRepository;
-import com.github.mdjc.impl.JdbcBuildingRepository;
+import com.github.mdjc.impl.JdbcCondoRepository;
 import com.github.mdjc.impl.JdbcOutlayRepository;
 import com.github.mdjc.impl.JdbcBillRepository;
 import com.github.mdjc.impl.JdbcUserRepository;
@@ -21,8 +21,8 @@ public class BeansConfig {
 	}
 	
 	@Bean
-	public BuildingRepository buildingRepository(JdbcTemplate template) {
-		return new JdbcBuildingRepository(template);
+	public CondoRepository condoRepository(JdbcTemplate template) {
+		return new JdbcCondoRepository(template);
 	}
 	
 	@Bean

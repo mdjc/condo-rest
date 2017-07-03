@@ -23,26 +23,26 @@ public class JdbcOutlayRepository implements OutlayRepository {
 	}
 
 	@Override
-	public List<Outlay> findBy(long buildingId, LocalDate from, LocalDate to, PaginationCriteria options) {
+	public List<Outlay> findBy(long condoId, LocalDate from, LocalDate to, PaginationCriteria options) {
 		if (to == null) {
 			to = LocalDate.now();
 		}
 		
 		return template.query("select * from outlays"
-				+ " where building = ? and created_on >= ? and created_on <= ? "
+				+ " where condo = ? and created_on >= ? and created_on <= ? "
 				+ " order by created_on " + options.getSortingOrder() + " limit " + options.getOffset() + ","
-				+ options.getLimit(), this::mapper, buildingId, from, to);
+				+ options.getLimit(), this::mapper, condoId, from, to);
 	}
 
 	@Override
-	public OutlayStats getStatsBy(long buildingId, LocalDate from, LocalDate to) {
+	public OutlayStats getStatsBy(long condoId, LocalDate from, LocalDate to) {
 		try {
-			return template.queryForObject("select b.id, sum(amount) as sum_amount from buildings b"
-					+ " left join outlays o on o.building = b.id and o.created_on >= ? and o.created_on <= ?"
+			return template.queryForObject("select b.id, sum(amount) as sum_amount from condos b"
+					+ " left join outlays o on o.condo = b.id and o.created_on >= ? and o.created_on <= ?"
 					+ " where b.id = ?"
-					+ " group by b.id", this::statsMapper, from, to, buildingId);
+					+ " group by b.id", this::statsMapper, from, to, condoId);
 		} catch(EmptyResultDataAccessException e) {
-			throw new NoSuchElementException("Unexistent Building");
+			throw new NoSuchElementException("Unexistent Condo");
 		}
 	}
 	

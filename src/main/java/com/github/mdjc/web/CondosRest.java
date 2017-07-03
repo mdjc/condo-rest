@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.mdjc.domain.BillRepository;
-import com.github.mdjc.domain.Building;
-import com.github.mdjc.domain.BuildingRepository;
-import com.github.mdjc.domain.BuildingStats;
+import com.github.mdjc.domain.Condo;
+import com.github.mdjc.domain.CondoRepository;
+import com.github.mdjc.domain.CondoStats;
 import com.github.mdjc.domain.Outlay;
 import com.github.mdjc.domain.OutlayRepository;
 import com.github.mdjc.domain.OutlayStats;
@@ -27,7 +27,7 @@ import com.github.mdjc.domain.User;
 @RestController
 public class CondosRest {
 	@Autowired
-	BuildingRepository buildingRepo;
+	CondoRepository condoRepo;
 
 	@Autowired
 	BillRepository billRepo;
@@ -35,41 +35,41 @@ public class CondosRest {
 	@Autowired
 	OutlayRepository outlayRepo;
 
-	@GetMapping(path = "/buildings")
-	public Map<String, List<Building>> userBuildings(Authentication auth) {
-		Map<String, List<Building>> map = new HashMap<>();
-		map.put("buildings", buildingRepo.getAllByUser((User) auth.getPrincipal()));
+	@GetMapping(path = "/condos")
+	public Map<String, List<Condo>> userCondos(Authentication auth) {
+		Map<String, List<Condo>> map = new HashMap<>();
+		map.put("condos", condoRepo.getAllByUser((User) auth.getPrincipal()));
 		return map;
 	}
 
-	@GetMapping(path = "/buildings/{buildingId}")
-	public Map<String, Building> getBuilding(@PathVariable long buildingId) {
-		Map<String, Building> map = new HashMap<>();
-		map.put("building", buildingRepo.getBy(buildingId));
+	@GetMapping(path = "/condos/{condoId}")
+	public Map<String, Condo> getCondo(@PathVariable long condoId) {
+		Map<String, Condo> map = new HashMap<>();
+		map.put("condo", condoRepo.getBy(condoId));
 		return map;
 	}
 
-	@GetMapping(path = "/buildings/{buildingId}/stats")
-	public Map<String, BuildingStats> buildingStats(@PathVariable long buildingId) {
-		Map<String, BuildingStats> map = new HashMap<>();
-		map.put("stats", buildingRepo.getStatsByBuildingId(buildingId));
+	@GetMapping(path = "/condos/{condoId}/stats")
+	public Map<String, CondoStats> condoStats(@PathVariable long condoId) {
+		Map<String, CondoStats> map = new HashMap<>();
+		map.put("stats", condoRepo.getStatsByCondoId(condoId));
 		return map;
 	}
 
-	@GetMapping(path = "/buildings/{buildingId}/bills/stats")
-	public Map<String, BilltStats> buildingBillStats(@PathVariable long buildingId, 
+	@GetMapping(path = "/condos/{condoId}/bills/stats")
+	public Map<String, BilltStats> condoBillStats(@PathVariable long condoId, 
 			@RequestParam("from")
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from, 
 			@RequestParam("to") 
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 		
 		Map<String, BilltStats> map = new HashMap<>();
-		map.put("stats", billRepo.getStatsBy(buildingId, from, to));
+		map.put("stats", billRepo.getStatsBy(condoId, from, to));
 		return map;
 	}
 
-	@GetMapping(path = "/buildings/{buildingId}/outlays")
-	public Map<String, List<Outlay>> buildingOutlays(@PathVariable long buildingId,
+	@GetMapping(path = "/condos/{condoId}/outlays")
+	public Map<String, List<Outlay>> condoOutlays(@PathVariable long condoId,
 			@RequestParam("from") 
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 			@RequestParam("to") 
@@ -80,19 +80,19 @@ public class CondosRest {
 		Map<String, List<Outlay>> map = new HashMap<>();
 		PaginationCriteria pagCriteria = new PaginationCriteria(offset, limit,
 				PaginationCriteria.SortingOrder.valueOf(order.toUpperCase()));
-		map.put("outlays", outlayRepo.findBy(buildingId, from, to, pagCriteria));
+		map.put("outlays", outlayRepo.findBy(condoId, from, to, pagCriteria));
 		return map;
 	}
 	
-	@GetMapping(path = "/buildings/{buildingId}/outlays/stats")
-	public Map<String, OutlayStats> buildingOutlayStats(@PathVariable long buildingId, 
+	@GetMapping(path = "/condos/{condoId}/outlays/stats")
+	public Map<String, OutlayStats> condoOutlayStats(@PathVariable long condoId, 
 			@RequestParam("from")
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from, 
 			@RequestParam("to") 
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 		
 		Map<String, OutlayStats> map = new HashMap<>();
-		map.put("stats", outlayRepo.getStatsBy(buildingId, from, to));
+		map.put("stats", outlayRepo.getStatsBy(condoId, from, to));
 		return map;
 	}
 }

@@ -64,14 +64,14 @@ public class OutlaysRepositoryTest {
 	}
 
 	@Test
-	public void testGetStatsBy_GivenValidBuildingFromAndTo_ShouldReturnOUtlay() {
+	public void testGetStatsBy_GivenValidCondoFromAndTo_ShouldReturnOUtlay() {
 		OutlayStats expected = new OutlayStats(25);
 		OutlayStats actual = repository.getStatsBy(1, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 7, 16));
 		assertTrue(expected.getAmount() - actual.getAmount() == 0);
 	}
 
 	@Test(expected = NoSuchElementException.class)
-	public void testGetStatsBy_GivenInvalidBuildingFromAndTo_ShouldThrowException() {
+	public void testGetStatsBy_GivenInvalidCondoFromAndTo_ShouldThrowException() {
 		repository.getStatsBy(69, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 7, 16));
 	}
 

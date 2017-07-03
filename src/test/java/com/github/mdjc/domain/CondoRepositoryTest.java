@@ -19,43 +19,43 @@ import com.github.mdjc.config.BeansConfig;
 @RunWith(SpringRunner.class)
 @JdbcTest
 @Import(BeansConfig.class)
-public class BuildingRepositoryTest {
+public class CondoRepositoryTest {
 	@Autowired
-	BuildingRepository repository;
+	CondoRepository repository;
 
 	@Test
-	public void testGetAllByUser_givenManager_shouldReturnTwoBuilding() {
+	public void testGetAllByUser_givenManager_shouldReturnTwoCondo() {
 		User user = new User("luis", Role.MANAGER);
-		List<Building> expected = Arrays.asList(
-				new Building(4, "Baldwing IV", user),
-				new Building(3, "Mira Flores IV", user));
-		List<Building> actual = repository.getAllByUser(user);
+		List<Condo> expected = Arrays.asList(
+				new Condo(4, "Baldwing IV", user),
+				new Condo(3, "Mira Flores IV", user));
+		List<Condo> actual = repository.getAllByUser(user);
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void testGetAllByUser_givenResident_shouldReturnOneBuilding() {
+	public void testGetAllByUser_givenResident_shouldReturnOneCondo() {
 		User user = new User("virgi", Role.RESIDENT);
-		List<Building> expected = Arrays.asList(new Building(1, "Shadai I", user));
-		List<Building> actual = repository.getAllByUser(user);
+		List<Condo> expected = Arrays.asList(new Condo(1, "Shadai I", user));
+		List<Condo> actual = repository.getAllByUser(user);
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void testGetAllByUser_givenManager_shouldReturnSeveralBuildings() {
+	public void testGetAllByUser_givenManager_shouldReturnSeveralCondos() {
 		User user = new User("mirna", Role.MANAGER);
-		List<Building> expected = Arrays.asList(new Building(2, "Loring  Place 2333", user),
-				new Building(1, "Shadai I", user));
-		List<Building> actual = repository.getAllByUser(user);
+		List<Condo> expected = Arrays.asList(new Condo(2, "Loring  Place 2333", user),
+				new Condo(1, "Shadai I", user));
+		List<Condo> actual = repository.getAllByUser(user);
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void testGetAllByUser_givenResident_shouldReturnSeveralBuildings() {
+	public void testGetAllByUser_givenResident_shouldReturnSeveralCondos() {
 		User user = new User("mary", Role.RESIDENT);
-		List<Building> expected = Arrays.asList(new Building(2, "Loring  Place 2333",  new User("mirna", Role.MANAGER)),
-				new Building(3, "Mira Flores IV",  new User("luis", Role.MANAGER)));
-		List<Building> actual = repository.getAllByUser(user);
+		List<Condo> expected = Arrays.asList(new Condo(2, "Loring  Place 2333",  new User("mirna", Role.MANAGER)),
+				new Condo(3, "Mira Flores IV",  new User("luis", Role.MANAGER)));
+		List<Condo> actual = repository.getAllByUser(user);
 		assertEquals(expected, actual);
 	}
 
@@ -66,9 +66,9 @@ public class BuildingRepositoryTest {
 	}
 	
 	@Test
-	public void testGetStatsByBuildingId_givenValidId_shouldReturnStatistics() {
-		BuildingStats actual = repository.getStatsByBuildingId(1);
-		BuildingStats expected = new BuildingStats(4, 2, 100);
+	public void testGetStatsByCondoId_givenValidId_shouldReturnStatistics() {
+		CondoStats actual = repository.getStatsByCondoId(1);
+		CondoStats expected = new CondoStats(4, 2, 100);
 		
 		assertEquals(expected.getApartmentCount(), actual.getApartmentCount());
 		assertEquals(expected.getResidentCount(), actual.getResidentCount());
@@ -77,15 +77,15 @@ public class BuildingRepositoryTest {
 	
 	
 	@Test(expected=NoSuchElementException.class)
-	public void testGetStatsByBuildingId_givenInvalidId_shouldThrowException() {
-		repository.getStatsByBuildingId(69);		
+	public void testGetStatsByCondoId_givenInvalidId_shouldThrowException() {
+		repository.getStatsByCondoId(69);		
 	}
 	
 	@Test
-	public void testGetBy_givenValidId_shouldReturnBuilding() {
+	public void testGetBy_givenValidId_shouldReturnCondo() {
 		User user = new User("luis", Role.MANAGER);
-		Building expected = new Building(3, "Mira Flores IV", user);
-		Building actual = repository.getBy(3);
+		Condo expected = new Condo(3, "Mira Flores IV", user);
+		Condo actual = repository.getBy(3);
 		assertEquals(expected, actual);
 		assertEquals(expected.getName(), actual.getName());
 		assertEquals(expected.getManager(), actual.getManager());

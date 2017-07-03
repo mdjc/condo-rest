@@ -22,14 +22,14 @@ public class BillRepositoryTest {
 	BillRepository repository;
 
 	@Test
-	public void testGetStatsBy_givenValidBuildingId() {
+	public void testGetStatsBy_givenValidCondoId() {
 		BilltStats expected = new BilltStats(3, 1, 3, 2, 40);
 		BilltStats actual = repository.getStatsBy(1, LocalDate.of(2016, 2, 23), LocalDate.of(2017, 10, 23));
 		assertEquals(expected, actual);
 	}
 
 	@Test(expected = NoSuchElementException.class)
-	public void testGetStatsBy_givenInvalidBuildingId() {
+	public void testGetStatsBy_givenInvalidCondoId() {
 		repository.getStatsBy(69, LocalDate.of(2016, 2, 23), LocalDate.of(2017, 10, 23));
 	}
 }

@@ -5,7 +5,7 @@ create table users (
 	role varchar(35)
 );
 
-create table buildings (
+create table condos (
 	id int not null auto_increment primary key,
 	name varchar(40) not null,
 	manager int not null,
@@ -16,9 +16,9 @@ create table buildings (
 create table apartments (
 	id int not null auto_increment primary key,
 	name varchar(20) not null,
-	building int not null,
+	condo int not null,
 	resident int,
-	foreign key(building) references buildings(id),
+	foreign key(condo) references condos(id),
 	foreign key(resident) references users(id)	
 );
 
@@ -40,8 +40,8 @@ create table outlays (
 	amount double not null,
 	category varchar(30),
 	created_on date not null,
-	building int not null,
+	condo int not null,
 	supplier varchar(40) default '',
 	comment varchar(200) default '',
-	foreign key(building) references buildings(id)
+	foreign key(condo) references condos(id)
 );
