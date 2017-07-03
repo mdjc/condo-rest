@@ -28,7 +28,7 @@ create table bills (
 	description varchar(60) not null,
 	due_amount double not null,
 	due_date date not null,
-	payment_status varchar(25) not null,
+	payment_status varchar(30) not null,
 	payment_method varchar(20),
 	last_update_on date not null,
 	foreign key(apartment) references apartments(id)

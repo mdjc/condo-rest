@@ -23,7 +23,7 @@ public class BillRepositoryTest {
 
 	@Test
 	public void testGetStatsBy_givenValidBuildingId() {
-		BilltStats expected = new BilltStats(3, 1, 2, 3, 40);
+		BilltStats expected = new BilltStats(3, 1, 3, 2, 40);
 		BilltStats actual = repository.getStatsBy(1, LocalDate.of(2016, 2, 23), LocalDate.of(2017, 10, 23));
 		assertEquals(expected, actual);
 	}

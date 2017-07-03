@@ -23,13 +23,13 @@ insert into apartments (name, building, resident) values ('25F', (select id from
 
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
-values((select id from apartments where name='1'), 'monthly share',  '20', '2017-6-15', 'PAID', 'CHECK', '2017-6-15');
+values((select id from apartments where name='1'), 'monthly share',  '20', '2017-6-15', 'PAID_CONFIRMED', 'CHECK', '2017-6-15');
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
 values((select id from apartments where name='1'), 'monthly share',  5.55, '2017-6-15',  'PENDING', null, '2017-6-15');
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
-values((select id from apartments where name='1D'), 'monthly share',  '20', '2017-6-15', 'PAID', 'CHECK', '2017-6-15');
+values((select id from apartments where name='1D'), 'monthly share',  '20', '2017-6-15', 'PAID_CONFIRMED', 'CHECK', '2017-6-15');
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
 values((select id from apartments where name='1A'), 'monthly share',  5.55, '2017-6-15',  'PENDING', null, '2017-6-15');
@@ -41,19 +41,19 @@ insert into bills (apartment, description, due_amount, due_date, payment_status,
 values((select id from apartments where name='1A'), 'monthly share',  10, '2017-6-15', 'PENDING', null, '2017-6-15');
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
-values((select id from apartments where name='1D'), 'monthly share',  10, '2017-6-16', 'PAID', 'TRANSFER', '2017-6-16');
+values((select id from apartments where name='1D'), 'monthly share',  10, '2017-6-16', 'PAID_CONFIRMED', 'TRANSFER', '2017-6-16');
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
 values((select id from apartments where name='1D'), 'monthly share',  10, '2017-6-27', 'REJECTED', 'TRANSFER', '2017-6-27');
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
-values((select id from apartments where name='1A'), 'monthly share',  10, '2017-7-1', 'PAID', 'TRANSFER', '2017-7-1');
+values((select id from apartments where name='1A'), 'monthly share',  10, '2017-7-1', 'PAID_CONFIRMED', 'TRANSFER', '2017-7-1');
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
 values((select id from apartments where name='1D'), 'monthly share',  10, '2017-7-1', 'PENDING', null, '2017-7-1',);
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
-values((select id from apartments where name='1D'), 'gas bill',  100, '2017-7-1',  'AWAITING_VALIDATION', 'CHECK', '2017-7-1');
+values((select id from apartments where name='1D'), 'gas bill',  100, '2017-7-1',  'PAID_AWAITING_CONFIRMATION', 'CHECK', '2017-7-1');
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
 values((select id from apartments where name='1D'), 'gas bill',  200, '2017-7-1',  'REJECTED', 'DEPOSIT', '2017-7-1');
