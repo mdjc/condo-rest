@@ -16,11 +16,9 @@ insert into apartments (name, condo, resident) values ('1B', (select id from con
 insert into apartments (name, condo, resident) values ('1C', (select id from condos where name = 'Shadai I'), null);
 insert into apartments (name, condo, resident) values ('1D', (select id from condos where name = 'Shadai I'), (select id from users where username='aldo'));
 
-
 insert into apartments (name, condo, resident) values ('1', (select id from condos where name = 'Loring  Place 2333'), (select id from users where username='john'));
 insert into apartments (name, condo, resident) values ('2', (select id from condos where name = 'Loring  Place 2333'), (select id from users where username='mary'));
 insert into apartments (name, condo, resident) values ('25F', (select id from condos where name = 'Mira Flores IV'), (select id from users where username='mary'));
-
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
 values((select id from apartments where name='1'), 'monthly share',  '20', '2017-6-15', 'PAID_CONFIRMED', 'CHECK', '2017-6-15');
@@ -50,7 +48,7 @@ insert into bills (apartment, description, due_amount, due_date, payment_status,
 values((select id from apartments where name='1A'), 'monthly share',  10, '2017-7-1', 'PAID_CONFIRMED', 'TRANSFER', '2017-7-1');
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
-values((select id from apartments where name='1D'), 'monthly share',  10, '2017-7-1', 'PENDING', null, '2017-7-1',);
+values((select id from apartments where name='1D'), 'monthly share',  10, '2017-7-1', 'PENDING', null, '2017-7-1');
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, payment_method, last_update_on)
 values((select id from apartments where name='1D'), 'gas bill',  100, '2017-7-1',  'PAID_AWAITING_CONFIRMATION', 'CHECK', '2017-7-1');

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 public class Bill {
 	private final long id;
-	private final Apartment apartment;
 	private final String description;
 	private final LocalDate dueDate;
 	private final double dueAmount;
@@ -12,10 +11,9 @@ public class Bill {
 	private final PaymentMethod paymentMethod;
 	private final LocalDate lastUpdateOn;	
 	
-	public Bill(long id, Apartment apartment, String description, LocalDate dueDate, double dueAmount,
+	public Bill(long id, String description, LocalDate dueDate, double dueAmount,
 			PaymentStatus paymentStatus, PaymentMethod paymentMethod, LocalDate lastUpdateOn) {
 		this.id = id;
-		this.apartment = apartment;
 		this.description = description;
 		this.dueDate = dueDate;
 		this.dueAmount = dueAmount;
@@ -26,10 +24,6 @@ public class Bill {
 
 	public long getId() {
 		return id;
-	}
-
-	public Apartment getApartment() {
-		return apartment;
 	}
 
 	public String getDescription() {

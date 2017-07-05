@@ -3,6 +3,7 @@ package com.github.mdjc.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.OutlayRepository;
@@ -26,7 +27,7 @@ public class BeansConfig {
 	}
 	
 	@Bean
-	public BillRepository billRepository(JdbcTemplate template) {
+	public BillRepository billRepository(NamedParameterJdbcTemplate template) {
 		return new JdbcBillRepository(template);
 	}
 	
