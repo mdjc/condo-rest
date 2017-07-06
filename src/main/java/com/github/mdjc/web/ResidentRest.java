@@ -17,17 +17,17 @@ import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.PaymentStatus;
 
 @RestController
-public class ApartmentRest {
+public class ResidentRest {
 	@Autowired
 	BillRepository billRepo;
 
-	@GetMapping(path = "apartments/{apartmentId}/bills")
-	public Map<String, List<Bill>> getApartmentBills(@PathVariable long apartmentId,
+	@GetMapping(path = "condos/{condoId}/residents/{username}/bills")
+	public Map<String, List<Bill>> getApartmentBills(@PathVariable long condoId, @PathVariable String username,
 			@RequestParam String[] paymentStatus) {
 		List<PaymentStatus> statusList = Arrays.stream(paymentStatus).map(e -> PaymentStatus.valueOf(e))
 				.collect(Collectors.toList());
 		Map<String, List<Bill>> map = new HashMap<>();
-		map.put("bills", billRepo.getBy(apartmentId, statusList));
+		map.put("bills", billRepo.getBy(condoId, username, statusList));
 		return map;
 	}
 }

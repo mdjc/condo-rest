@@ -38,16 +38,16 @@ public class BillRepositoryTest {
 	}
 
 	@Test
-	public void testGetByGivenValidApartmentIdAndPaymentStatusList_ShouldReturnList() {
+	public void testGetByGivenValidCondoUsernameAndPaymentStatusList_ShouldReturnList() {
 		List<Bill> expected = Arrays.asList(
-				new Bill(8, "montly share", LocalDate.of(2017, 06, 27), 10, PaymentStatus.REJECTED,
+				new Bill(8, "cuota mensual", LocalDate.of(2017, 06, 27), 10, PaymentStatus.REJECTED,
 						PaymentMethod.TRANSFER, LocalDate.of(2017, 06, 27)),
-				new Bill(10, "monthly share", LocalDate.of(2017, 07, 01), 10, PaymentStatus.PENDING, null,
+				new Bill(10, "cuota mensual", LocalDate.of(2017, 07, 01), 10, PaymentStatus.PENDING, null,
 						LocalDate.of(2017, 07, 01)),
-				new Bill(12, "gas bill", LocalDate.of(2017, 07, 01), 200, PaymentStatus.REJECTED, PaymentMethod.DEPOSIT,
+				new Bill(12, "consumo de gas", LocalDate.of(2017, 07, 01), 200, PaymentStatus.REJECTED, PaymentMethod.DEPOSIT,
 						LocalDate.of(2017, 07, 01)));
 
-		List<Bill> actual = repository.getBy(4, Arrays.asList(PaymentStatus.PENDING, PaymentStatus.REJECTED));
+		List<Bill> actual = repository.getBy(1, "aldo", Arrays.asList(PaymentStatus.PENDING, PaymentStatus.REJECTED));
 
 		assertEquals(expected, actual);
 
@@ -56,13 +56,18 @@ public class BillRepositoryTest {
 		}
 	}
 
-	public void testGetByGivenInvalidApartmentId_ShouldReturnEmptyList() {
-		List<Bill> actual = repository.getBy(69, Arrays.asList(PaymentStatus.PENDING));
+	public void testGetByGivenInvalidCondId_ShouldReturnEmptyList() {
+		List<Bill> actual = repository.getBy(69, "aldo", Arrays.asList(PaymentStatus.PENDING));
+		assertEquals(Collections.EMPTY_LIST, actual);
+	}
+	
+	public void testGetByGivenInvalidUsername_ShouldReturnEmptyList() {
+		List<Bill> actual = repository.getBy(1, "fakeusername", Arrays.asList(PaymentStatus.PENDING));
 		assertEquals(Collections.EMPTY_LIST, actual);
 	}
 
-	public void testGetByGivenValidApartmentWithoutPayments_ShouldReturnEmptyList() {
-		List<Bill> actual = repository.getBy(7, Arrays.asList(PaymentStatus.PENDING, PaymentStatus.REJECTED,
+	public void testGetByGivenValidCondoAndUsernameForApartmentWithoutPayments_ShouldReturnEmptyList() {
+		List<Bill> actual = repository.getBy(3, "mary", Arrays.asList(PaymentStatus.PENDING, PaymentStatus.REJECTED,
 				PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentStatus.PAID_CONFIRMED));
 		assertEquals(Collections.EMPTY_LIST, actual);
 	}

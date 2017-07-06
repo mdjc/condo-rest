@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface BillRepository {
 	public BilltStats getStatsBy(long condoId, LocalDate from, LocalDate to);
-	public List<Bill> getBy(long apartmentId, List<PaymentStatus> paymentStatusList);
+	public List<Bill> getBy(long condoId, String username,  List<PaymentStatus> paymentStatusList);
 }

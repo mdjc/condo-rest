@@ -47,15 +47,17 @@ public class JdbcBillRepository implements BillRepository {
 	}
 
 	@Override
-	public List<Bill> getBy(long apartmentId, List<PaymentStatus> paymentStatusList) {
+	public List<Bill> getBy(long condoId, String username, List<PaymentStatus> paymentStatusList) {
 		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		parameters.addValue("apartment_id", apartmentId);
+		parameters.addValue("username", username);
+		parameters.addValue("condo_id", condoId);
 		parameters.addValue("payment_status_list",
 				paymentStatusList.stream().map(e -> e.toString()).collect(Collectors.toList()));
 
 			return template.query("select a.id as apartment, b.* from apartments a"
 				+ " left join bills b on b.apartment = a.id and b.payment_status in (:payment_status_list)"
-				+ " where a.id = :apartment_id order by b.last_update_on, payment_status asc", parameters, this::mapper);		
+				+ " where a.condo = :condo_id and resident = (select id from users where username=:username)"
+				+ " order by b.last_update_on, payment_status asc", parameters, this::mapper);		
 	}
 
 	private BilltStats statsMapper(ResultSet rs, int rownum) throws SQLException {
