@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "app.bills.payment.images.directory",
+  "type": "java.lang.String",
+  "description": "Directory to store bills' proof of payment images"
+}]}

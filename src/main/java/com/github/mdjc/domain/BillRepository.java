@@ -4,6 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface BillRepository {
-	public BilltStats getStatsBy(long condoId, LocalDate from, LocalDate to);
-	public List<Bill> getBy(long condoId, String username,  List<PaymentStatus> paymentStatusList);
+	Bill getBy(long billId);
+	BilltStats getStatsBy(long condoId, LocalDate from, LocalDate to);
+	
+	List<Bill> findBy(long condoId, List<PaymentStatus> paymentStatusList);
+	List<Bill> findBy(long condoId, String username, List<PaymentStatus> paymentStatusList);
+	
+	void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod,
+			ProofOfPaymentExtension prooOfPaymentExt);
 }

@@ -1,21 +1,27 @@
 package com.github.mdjc.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.OutlayRepository;
-import com.github.mdjc.domain.BillRepository;
+import com.github.mdjc.domain.PaymentHelper;
 import com.github.mdjc.domain.UserRepository;
+import com.github.mdjc.impl.DefaultPaymentHelper;
+import com.github.mdjc.impl.JdbcBillRepository;
 import com.github.mdjc.impl.JdbcCondoRepository;
 import com.github.mdjc.impl.JdbcOutlayRepository;
-import com.github.mdjc.impl.JdbcBillRepository;
 import com.github.mdjc.impl.JdbcUserRepository;
 
 @Configuration
-public class BeansConfig {	
+public class BeansConfig {
+	@Value("${app.bills.payment.images.directory}")
+	String billsProofOfPaymentDir;
+	
 	@Bean
 	public UserRepository userRepository(JdbcTemplate template){
 		return new JdbcUserRepository(template);
@@ -34,5 +40,10 @@ public class BeansConfig {
 	@Bean
 	public OutlayRepository outlayRepository(JdbcTemplate template){
 		return new JdbcOutlayRepository(template);
+	}
+	
+	@Bean
+	public PaymentHelper paymentHelper(NamedParameterJdbcTemplate template) {
+		return new DefaultPaymentHelper(billsProofOfPaymentDir, billRepository(template));
 	}
 }

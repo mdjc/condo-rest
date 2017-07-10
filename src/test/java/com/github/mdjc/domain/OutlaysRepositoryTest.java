@@ -25,7 +25,7 @@ public class OutlaysRepositoryTest {
 	OutlayRepository repository;
 
 	@Test
-	public void testFindBy_GivenFromToAndLimit_ShouldReturnTwoOutlays() {
+	public void testFindBy_givenFromToAndLimit_shouldReturnTwoOutlays() {
 		List<Outlay> expected = Arrays.asList(
 				new Outlay(1, OutlayCategory.SECURITY, 15, LocalDate.of(2017, 6, 16), "Watchman Dominicana", ""),
 				new Outlay(2, OutlayCategory.REPARATION, 10, LocalDate.of(2017, 7, 16), "Edenorte",
@@ -36,7 +36,7 @@ public class OutlaysRepositoryTest {
 	}
 
 	@Test
-	public void testFindBy_GivenFromAndLimit_ShouldReturnOneOutlay() {
+	public void testFindBy_givenFromAndLimit_shouldReturnOneOutlay() {
 		List<Outlay> expected = Arrays.asList(
 				new Outlay(1, OutlayCategory.SECURITY, 15, LocalDate.of(2017, 6, 16), "Watchman Dominicana", ""));
 		List<Outlay> actual = repository.findBy(1, LocalDate.of(2017, 6, 16), null, new PaginationCriteria(0, 1));
@@ -44,7 +44,7 @@ public class OutlaysRepositoryTest {
 	}
 
 	@Test
-	public void testFindBy_GivenFromToAndLimitSortDesc_ShouldReturnTwoOutlaysSortedDesc() {
+	public void testFindBy_givenFromToAndLimitSortDesc_shouldReturnTwoOutlaysSortedDesc() {
 		List<Outlay> expected = Arrays.asList(
 				new Outlay(1, OutlayCategory.SECURITY, 15, LocalDate.of(2017, 6, 16), "Watchman Dominicana", ""),
 				new Outlay(2, OutlayCategory.REPARATION, 10, LocalDate.of(2017, 7, 16), "Edenorte",
@@ -55,7 +55,7 @@ public class OutlaysRepositoryTest {
 	}
 
 	@Test
-	public void testFindBy_GivenFromToOffsetAndLimitSortDesc_ShouldReturnOneOutlaySortedDesc() {
+	public void testFindBy_givenFromToOffsetAndLimitSortDesc_shouldReturnOneOutlaySortedDesc() {
 		List<Outlay> expected = Arrays.asList(new Outlay(2, OutlayCategory.REPARATION, 10, LocalDate.of(2017, 7, 16),
 				"Edenorte", "Reparación Lámpara Pasillo"));
 		List<Outlay> actual = repository.findBy(1, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 8, 16),
@@ -64,14 +64,14 @@ public class OutlaysRepositoryTest {
 	}
 
 	@Test
-	public void testGetStatsBy_GivenValidCondoFromAndTo_ShouldReturnOUtlay() {
+	public void testGetStatsBy_givenValidCondoFromAndTo_shouldReturnOUtlay() {
 		OutlayStats expected = new OutlayStats(25);
 		OutlayStats actual = repository.getStatsBy(1, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 7, 16));
 		assertTrue(expected.getAmount() - actual.getAmount() == 0);
 	}
 
 	@Test(expected = NoSuchElementException.class)
-	public void testGetStatsBy_GivenInvalidCondoFromAndTo_ShouldThrowException() {
+	public void testGetStatsBy_givenInvalidCondoFromAndTo_shouldThrowException() {
 		repository.getStatsBy(69, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 7, 16));
 	}
 

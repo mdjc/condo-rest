@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.mdjc.domain.User;
 
 @RestController
-public class LoginController {
+public class LoginRest {
 	@PostMapping("/login")
 	User login(Authentication auth) {
 		return (User) auth.getPrincipal();
