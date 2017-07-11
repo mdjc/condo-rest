@@ -12,4 +12,5 @@ public interface BillRepository {
 	
 	void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod,
 			ProofOfPaymentExtension prooOfPaymentExt);
+	void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod);
 }

@@ -1,12 +1,14 @@
 package com.github.mdjc.domain;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public interface PaymentHelper {
-	void payBill(long billId, PaymentMethod paymentMethod, ProofOfPaymentExtension extension, byte[] proofOfPaymentContent)
+	void updateBillPayment(long billId, PaymentMethod paymentMethod, ProofOfPaymentExtension extension, byte[] proofOfPaymentContent)
 			throws Exception;
+	void updateBillPayment(long billId, PaymentMethod paymentMethod) throws IOException;
 
 	byte[] getProofOfPaymentImage(long billId) throws Exception;
 

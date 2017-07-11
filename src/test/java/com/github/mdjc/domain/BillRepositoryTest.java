@@ -109,13 +109,23 @@ public class BillRepositoryTest {
 	}
 
 	@Test
-	public void testUpdatePaymentInfo_shouldPerformUpdate() {
+	public void testUpdatePaymentInfo_givenPaymentStatusMethodAndExtension_shouldPerformUpdate() {
 		int billId = 10;
 		repository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentMethod.TRANSFER,
 				ProofOfPaymentExtension.PNG);
 		Bill expected = new Bill(10, "cuota mensual", LocalDate.of(2017, 07, 01), 10,
 				PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.now(), PaymentMethod.TRANSFER,
 				ProofOfPaymentExtension.PNG);
+		Bill actual = repository.getBy(billId);
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testUpdatePaymentInfo_givenPaymentStatusAndMethod_shouldPerformUpdate() {
+		int billId = 8;
+		Bill expected = new Bill(billId, "cuota mensual", LocalDate.of(2017, 06, 27), 10, PaymentStatus.REJECTED,
+				LocalDate.now(), PaymentMethod.CHECK, ProofOfPaymentExtension.PNG);
+		repository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentMethod.CHECK);		
 		Bill actual = repository.getBy(billId);
 		assertEquals(expected, actual);
 	}

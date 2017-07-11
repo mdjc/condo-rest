@@ -19,10 +19,15 @@ public class DefaultPaymentHelper implements PaymentHelper {
 	}
 
 	@Override
-	public void payBill(long billId, PaymentMethod paymentMethod, ProofOfPaymentExtension proofOfPaymentExt,
+	public void updateBillPayment(long billId, PaymentMethod paymentMethod, ProofOfPaymentExtension proofOfPaymentExt,
 			byte[] proofOfPaymentContent) throws IOException {
 		java.nio.file.Files.write(Paths.get(billsProofOfPaymentDir, String.valueOf(billId)), proofOfPaymentContent);
 		billRepository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, paymentMethod, proofOfPaymentExt);
+	}
+	
+	@Override
+	public void updateBillPayment(long billId, PaymentMethod paymentMethod) throws IOException {
+		billRepository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, paymentMethod);
 	}
 
 	@Override

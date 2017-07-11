@@ -41,13 +41,11 @@ public class BillRest {
 		List<PaymentStatus> statusList = helper.getAsEnumList(paymentStatus);
 		return ImmutableMap.of("bills", billRepo.findBy(condoId, statusList));
 	}
-	
+
 	@GetMapping(path = "/condos/{condoId}/bills/stats")
-	public Map<String, BilltStats> condoBillStats(@PathVariable long condoId, 
-			@RequestParam("from")
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from, 
-			@RequestParam("to") 
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+	public Map<String, BilltStats> condoBillStats(@PathVariable long condoId,
+			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 		return ImmutableMap.of("stats", billRepo.getStatsBy(condoId, from, to));
 	}
 
@@ -65,10 +63,14 @@ public class BillRest {
 
 	@PutMapping(path = "bills/{billId}", consumes = { "multipart/form-data" })
 	public void savePaymentInfo(@PathVariable long billId, @RequestPart String paymentMethod,
-			@RequestPart MultipartFile proofOfPaymentPict) throws Exception {
-		String pictExtension = Files.getExtension(proofOfPaymentPict.getOriginalFilename()).toUpperCase();
-		helper.payBill(billId, PaymentMethod.valueOf(paymentMethod), ProofOfPaymentExtension.valueOf(pictExtension),
-				proofOfPaymentPict.getBytes());
+			@RequestPart(required = false) MultipartFile proofOfPaymentPict) throws Exception {
+		if (proofOfPaymentPict == null) {
+			helper.updateBillPayment(billId, PaymentMethod.valueOf(paymentMethod));
+		} else {
+			String pictExtension = Files.getExtension(proofOfPaymentPict.getOriginalFilename()).toUpperCase();
+			helper.updateBillPayment(billId, PaymentMethod.valueOf(paymentMethod),
+					ProofOfPaymentExtension.valueOf(pictExtension), proofOfPaymentPict.getBytes());
+		}
 	}
 
 	@GetMapping(path = "bills/{billId}/payment-img")
