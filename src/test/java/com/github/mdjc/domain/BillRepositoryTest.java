@@ -39,6 +39,20 @@ public class BillRepositoryTest {
 	}
 
 	@Test
+	public void testGetCondoBillBy_givenValidId_shouldReturnCondoBill() {
+		CondoBill expected = new CondoBill(3, "cuota mensual", LocalDate.of(2017, 6, 15), 20,
+				PaymentStatus.PAID_CONFIRMED, LocalDate.of(2017, 6, 15), PaymentMethod.CHECK,
+				ProofOfPaymentExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT)));
+		CondoBill actual = repository.getCondoBilldBy(3);
+		assertCondoBillEquals(expected, actual);
+	}
+
+	@Test(expected = NoSuchElementException.class)
+	public void testGetCondoBillBy_givenInvalidId_shouldThrowException() {
+		repository.getCondoBilldBy(69);
+	}
+
+	@Test
 	public void testGetStatsBy_givenValidCondoId_shouldReturnStats() {
 		BilltStats expected = new BilltStats(3, 2, 3, 2, 40);
 		BilltStats actual = repository.getStatsBy(1, LocalDate.of(2016, 2, 23), LocalDate.of(2017, 10, 23));
@@ -52,29 +66,30 @@ public class BillRepositoryTest {
 
 	@Test
 	public void testFindBy_givenValidCondoIdAndPaymentStatusList_shouldReturnList() {
-		List<Bill> expected = Arrays.asList(
-				new Bill(11, "consumo de gas", LocalDate.of(2017, 7, 1), 100, PaymentStatus.PAID_AWAITING_CONFIRMATION,
-						LocalDate.of(2017, 7, 1), PaymentMethod.CHECK, ProofOfPaymentExtension.JPG),
-				new Bill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10), 350,
+		List<CondoBill> expected = Arrays.asList(
+				new CondoBill(11, "consumo de gas", LocalDate.of(2017, 7, 1), 100,
+						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 1), PaymentMethod.CHECK,
+						ProofOfPaymentExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT))),
+				new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10), 350,
 						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
-						ProofOfPaymentExtension.PNG));
-		List<Bill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION));
+						ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
+		List<CondoBill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION));
 		assertEquals(expected, actual);
-		assertBillListEquals(expected, actual);
+		assertCondoBillListEquals(expected, actual);
 	}
-	
+
 	@Test
 	public void testFindBy_givenValidCondoIdAndPaymentStatusListForCondoWithoutPayments_shouldReturnEmptyList() {
-		List<Bill> actual = repository.findBy(3, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION));
-		assertBillListEquals(Collections.emptyList(), actual);
+		List<CondoBill> actual = repository.findBy(3, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION));
+		assertCondoBillListEquals(Collections.emptyList(), actual);
 	}
 
 	@Test
 	public void testFindBy_givenInvalidCondoIdAndPaymentStatusList_shouldReturnEmptyList() {
-		List<Bill> actual = repository.findBy(69, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION));
-		assertBillListEquals(Collections.emptyList(), actual);
+		List<CondoBill> actual = repository.findBy(69, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION));
+		assertCondoBillListEquals(Collections.emptyList(), actual);
 	}
-	
+
 	@Test
 	public void testFindBy_givenValidCondoUsernameAndPaymentStatusList_shouldReturnList() {
 		List<Bill> expected = Arrays.asList(
@@ -119,15 +134,21 @@ public class BillRepositoryTest {
 		Bill actual = repository.getBy(billId);
 		assertEquals(expected, actual);
 	}
-	
+
 	@Test
 	public void testUpdatePaymentInfo_givenPaymentStatusAndMethod_shouldPerformUpdate() {
 		int billId = 8;
 		Bill expected = new Bill(billId, "cuota mensual", LocalDate.of(2017, 06, 27), 10, PaymentStatus.REJECTED,
 				LocalDate.now(), PaymentMethod.CHECK, ProofOfPaymentExtension.PNG);
-		repository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentMethod.CHECK);		
+		repository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentMethod.CHECK);
 		Bill actual = repository.getBy(billId);
 		assertEquals(expected, actual);
+	}
+
+	private void assertCondoBillEquals(CondoBill expected, CondoBill actual) {
+		assertBillEquals(expected, actual);
+		assertEquals(expected.getApartment(), expected.getApartment());
+		assertEquals(expected.getApartment().getResident(), actual.getApartment().getResident());
 	}
 
 	private void assertBillEquals(Bill expected, Bill actual) {
@@ -140,10 +161,16 @@ public class BillRepositoryTest {
 		assertEquals(expected.getPaymentMethod(), expected.getPaymentMethod());
 		assertEquals(expected.getProofOfPaymentExtension(), actual.getProofOfPaymentExtension());
 	}
-	
+
 	private void assertBillListEquals(List<Bill> expected, List<Bill> actual) {
 		for (int i = 0; i < expected.size(); i++) {
 			assertBillEquals(expected.get(i), actual.get(i));
+		}
+	}
+
+	private void assertCondoBillListEquals(List<CondoBill> expected, List<CondoBill> actual) {
+		for (int i = 0; i < expected.size(); i++) {
+			assertCondoBillEquals(expected.get(i), actual.get(i));
 		}
 	}
 }

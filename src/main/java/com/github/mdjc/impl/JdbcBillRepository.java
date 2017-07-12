@@ -12,19 +12,18 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.github.mdjc.domain.Apartment;
 import com.github.mdjc.domain.Bill;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.BilltStats;
+import com.github.mdjc.domain.CondoBill;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
 import com.github.mdjc.domain.ProofOfPaymentExtension;
+import com.github.mdjc.domain.Role;
+import com.github.mdjc.domain.User;
 
 public class JdbcBillRepository implements BillRepository {
-	private static final String CONDO_BILLS_SELECT = 
-			"select b.* from apartments a"
-					+ " join bills b on b.apartment = a.id and b.payment_status in (:payment_status_list)"
-					+ " where a.condo = :condo_id ";
-	
 	private final NamedParameterJdbcTemplate template;
 	
 	public JdbcBillRepository(NamedParameterJdbcTemplate template) {
@@ -39,7 +38,22 @@ public class JdbcBillRepository implements BillRepository {
 		try {
 			return template.queryForObject("select * from bills where id = :bill_id", parameters, this::mapper);
 		} catch (EmptyResultDataAccessException e) {
-			throw new NoSuchElementException("Unexistent Receipt");
+			throw new NoSuchElementException("Unexistent Bill");
+		}
+	}
+	
+	@Override
+	public CondoBill getCondoBilldBy(long billId) {
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("billId", billId);
+
+		try {
+			return template.queryForObject("select b.*, a.name as apartment_name, u.username from apartments a"
+				+ " join bills b on b.apartment = a.id"
+				+ " join users u on u.id = a.resident"
+				+ " where b.id = :billId ", parameters, this::condoBillMapper);
+		} catch (EmptyResultDataAccessException e) {
+			throw new NoSuchElementException("Unexistent Bill");
 		}
 	}
 	
@@ -66,13 +80,16 @@ public class JdbcBillRepository implements BillRepository {
 						+ " where b.id = :condo_id", parameters, this::statsMapper);
 	}
 	
-	public List<Bill> findBy(long condoId, List<PaymentStatus> paymentStatusList) {
+	public List<CondoBill> findBy(long condoId, List<PaymentStatus> paymentStatusList) {
 		MapSqlParameterSource parameters = new MapSqlParameterSource();
 		parameters.addValue("condo_id", condoId);
 		parameters.addValue("payment_status_list", statusStrList(paymentStatusList));
 
-		return template.query(CONDO_BILLS_SELECT
-				+ " order by b.last_update_on, payment_status asc", parameters, this::mapper);
+		return template.query("select b.*, a.name as apartment_name, u.username from apartments a"
+				+ " join bills b on b.apartment = a.id and b.payment_status in (:payment_status_list)"
+				+ " join users u on u.id = a.resident"
+				+ " where a.condo = :condo_id "
+				+ " order by b.last_update_on, payment_status asc", parameters, this::condoBillMapper);
 	}
 	
 	@Override
@@ -82,7 +99,9 @@ public class JdbcBillRepository implements BillRepository {
 		parameters.addValue("condo_id", condoId);
 		parameters.addValue("payment_status_list", statusStrList(paymentStatusList));
 
-		return template.query(CONDO_BILLS_SELECT
+		return template.query("select b.* from apartments a"
+				+ " join bills b on b.apartment = a.id and b.payment_status in (:payment_status_list)"
+				+ " where a.condo = :condo_id "
 				+ " and resident = (select id from users where username=:username)"
 				+ " order by b.last_update_on, payment_status asc", parameters, this::mapper);
 	}
@@ -130,6 +149,22 @@ public class JdbcBillRepository implements BillRepository {
 		return new Bill(rs.getLong("id"), rs.getString("description"), rs.getDate("due_date").toLocalDate(),
 				rs.getDouble("due_amount"), paymentStatus,  rs.getDate("last_update_on").toLocalDate(), paymentMethod,
 				proofOfPaymentExt);
+	}
+	
+	private CondoBill condoBillMapper(ResultSet rs, int rownume) throws SQLException {
+		PaymentMethod paymentMethod = rs.getString("payment_method") != null
+				? PaymentMethod.valueOf(rs.getString("payment_method")) : null;
+
+		PaymentStatus paymentStatus = rs.getString("payment_status") != null
+				? PaymentStatus.valueOf(rs.getString("payment_status")) : null;
+
+		ProofOfPaymentExtension proofOfPaymentExt = rs.getString("proof_of_payment_extension") != null
+				? ProofOfPaymentExtension.valueOf(rs.getString("proof_of_payment_extension")) : null;
+
+		Apartment apartment = new Apartment(rs.getString("apartment_name"), new User(rs.getString("username"), Role.RESIDENT));
+		return new CondoBill(rs.getLong("id"), rs.getString("description"), rs.getDate("due_date").toLocalDate(),
+				rs.getDouble("due_amount"), paymentStatus,  rs.getDate("last_update_on").toLocalDate(), paymentMethod,
+				proofOfPaymentExt, apartment );
 	}
 	
 	private BilltStats statsMapper(ResultSet rs, int rownum) throws SQLException {

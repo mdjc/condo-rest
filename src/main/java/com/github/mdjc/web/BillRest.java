@@ -22,6 +22,7 @@ import com.github.mdjc.commons.files.Files;
 import com.github.mdjc.domain.Bill;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.BilltStats;
+import com.github.mdjc.domain.CondoBill;
 import com.github.mdjc.domain.PaymentHelper;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
@@ -36,10 +37,15 @@ public class BillRest {
 	@Autowired
 	PaymentHelper helper;
 
-	@GetMapping(path = "/condos/{condoId}/bills")
-	public Map<String, List<Bill>> condoBills(@PathVariable long condoId, @RequestParam String[] paymentStatus) {
+	@GetMapping(path = "/condos/{condoId}/condoBills")
+	public Map<String, List<CondoBill>> getCondoBills(@PathVariable long condoId, @RequestParam String[] paymentStatus) {
 		List<PaymentStatus> statusList = helper.getAsEnumList(paymentStatus);
-		return ImmutableMap.of("bills", billRepo.findBy(condoId, statusList));
+		return ImmutableMap.of("condo-bills", billRepo.findBy(condoId, statusList));
+	}
+	
+	@GetMapping(path = "/condos/{condoId}/condoBills/{billId}")
+	public Map<String, CondoBill> getCondoBill(@PathVariable long billId) {
+		return ImmutableMap.of("condo-bill", billRepo.getCondoBilldBy(billId));
 	}
 
 	@GetMapping(path = "/condos/{condoId}/bills/stats")

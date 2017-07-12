@@ -5,9 +5,10 @@ import java.util.List;
 
 public interface BillRepository {
 	Bill getBy(long billId);
+	CondoBill getCondoBilldBy(long billId);
 	BilltStats getStatsBy(long condoId, LocalDate from, LocalDate to);
 	
-	List<Bill> findBy(long condoId, List<PaymentStatus> paymentStatusList);
+	List<CondoBill> findBy(long condoId, List<PaymentStatus> paymentStatusList);
 	List<Bill> findBy(long condoId, String username, List<PaymentStatus> paymentStatusList);
 	
 	void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod,
