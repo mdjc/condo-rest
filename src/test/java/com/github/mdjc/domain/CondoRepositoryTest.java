@@ -22,7 +22,32 @@ import com.github.mdjc.config.BeansConfig;
 public class CondoRepositoryTest {
 	@Autowired
 	CondoRepository repository;
-
+	
+	@Test
+	public void testGetBy_givenValidId_shouldReturnCondo() {
+		User user = new User("luis", Role.MANAGER);
+		Condo expected = new Condo(3, "Mira Flores IV", user);
+		Condo actual = repository.getBy(3);
+		assertEquals(expected, actual);
+		assertEquals(expected.getName(), actual.getName());
+		assertEquals(expected.getManager(), actual.getManager());
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void testGetBy_givenInvalidId_shouldThrowException() {
+		repository.getBy(69);		
+	}
+	
+	@Test
+	public void testGetStatsByCondoId_givenValidId_shouldReturnStatistics() {
+		CondoStats actual = repository.getStatsByCondoId(1);
+		CondoStats expected = new CondoStats(4, 2, 100);
+		
+		assertEquals(expected.getApartmentCount(), actual.getApartmentCount());
+		assertEquals(expected.getResidentCount(), actual.getResidentCount());
+		assertTrue(Math.abs(expected.getBalance() - actual.getBalance()) == 0);
+	}
+	
 	@Test
 	public void testGetAllByUser_givenManager_shouldReturnTwoCondo() {
 		User user = new User("luis", Role.MANAGER);
@@ -63,18 +88,7 @@ public class CondoRepositoryTest {
 	public void testGetAllByUser_givenUnexistentUser_shouldReturnEmptyList() {
 		User user = new User("unexistent", Role.MANAGER);
 		assertTrue(repository.getAllByUser(user).isEmpty());
-	}
-	
-	@Test
-	public void testGetStatsByCondoId_givenValidId_shouldReturnStatistics() {
-		CondoStats actual = repository.getStatsByCondoId(1);
-		CondoStats expected = new CondoStats(4, 2, 100);
-		
-		assertEquals(expected.getApartmentCount(), actual.getApartmentCount());
-		assertEquals(expected.getResidentCount(), actual.getResidentCount());
-		assertTrue(Math.abs(expected.getBalance() - actual.getBalance()) == 0);
-	}
-	
+	}	
 	
 	@Test(expected=NoSuchElementException.class)
 	public void testGetStatsByCondoId_givenInvalidId_shouldThrowException() {
@@ -82,17 +96,24 @@ public class CondoRepositoryTest {
 	}
 	
 	@Test
-	public void testGetBy_givenValidId_shouldReturnCondo() {
-		User user = new User("luis", Role.MANAGER);
-		Condo expected = new Condo(3, "Mira Flores IV", user);
-		Condo actual = repository.getBy(3);
-		assertEquals(expected, actual);
-		assertEquals(expected.getName(), actual.getName());
-		assertEquals(expected.getManager(), actual.getManager());
+	public void testFefreshBalanceWithBill_givenValidBillAndPositiveSign_shouldPerformRefresh() {
+		CondoStats stats = repository.getStatsByCondoId(1);
+		double currentBalance = stats.getBalance();
+		double expectedBalance = currentBalance + 20;
+		repository.refreshBalanceWithBill(3, 1);
+		CondoStats statsAfterRefresh = repository.getStatsByCondoId(1);
+		double actualBalance = statsAfterRefresh.getBalance();
+		assertTrue(expectedBalance - actualBalance == 0);
 	}
 	
-	@Test(expected=NoSuchElementException.class)
-	public void testGetBy_givenInvalidId_shouldThrowException() {
-		repository.getBy(69);		
+	@Test
+	public void testFefreshBalanceWithBill_givenValidBillAndNegativeSign_shouldPerformRefresh() {
+		CondoStats stats = repository.getStatsByCondoId(1);
+		double currentBalance = stats.getBalance();
+		double expectedBalance = currentBalance - 20;
+		repository.refreshBalanceWithBill(3, -1);
+		CondoStats statsAfterRefresh = repository.getStatsByCondoId(1);
+		double actualBalance = statsAfterRefresh.getBalance();
+		assertTrue(expectedBalance - actualBalance == 0);
 	}
 }

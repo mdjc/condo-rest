@@ -135,6 +135,19 @@ public class JdbcBillRepository implements BillRepository {
 						+ " last_update_on = :last_update_on where id = :bill_id  ",
 				parameters);
 	}
+	
+	@Override
+	public void updatePaymentInfo(long billId, PaymentStatus paymentStatus) {
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("bill_id", billId);
+		parameters.addValue("payment_status", paymentStatus.toString());
+		parameters.addValue("last_update_on", Date.valueOf(LocalDate.now()));
+		
+		template.update(
+				"update bills set payment_status = :payment_status, "
+						+ " last_update_on = :last_update_on where id = :bill_id  ",
+				parameters);
+	}
 
 	private Bill mapper(ResultSet rs, int rownum) throws SQLException {
 		PaymentMethod paymentMethod = rs.getString("payment_method") != null

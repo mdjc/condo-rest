@@ -144,6 +144,17 @@ public class BillRepositoryTest {
 		Bill actual = repository.getBy(billId);
 		assertEquals(expected, actual);
 	}
+	
+	
+	@Test
+	public void testUpdatePaymentInfo_givenPaymentStatus_shouldPerformUpdate() {
+		int billId = 13;
+		Bill expected = new Bill(billId, "iluminación del pasillo", LocalDate.of(2017, 07, 10), 10, PaymentStatus.PAID_CONFIRMED,
+				LocalDate.now(), PaymentMethod.CHECK, ProofOfPaymentExtension.PNG);
+		repository.updatePaymentInfo(billId, PaymentStatus.PAID_CONFIRMED);
+		Bill actual = repository.getBy(billId);
+		assertEquals(expected, actual);
+	}
 
 	private void assertCondoBillEquals(CondoBill expected, CondoBill actual) {
 		assertBillEquals(expected, actual);

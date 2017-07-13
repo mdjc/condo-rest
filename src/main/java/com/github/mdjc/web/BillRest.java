@@ -11,8 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,8 +69,8 @@ public class BillRest {
 		return ImmutableMap.of("bill", billRepo.getBy(billId));
 	}
 
-	@PutMapping(path = "bills/{billId}", consumes = { "multipart/form-data" })
-	public void savePaymentInfo(@PathVariable long billId, @RequestPart String paymentMethod,
+	@PutMapping(path = "bills/{billId}/payment", consumes = { "multipart/form-data" })
+	public void putPaymentInfo(@PathVariable long billId, @RequestPart String paymentMethod,
 			@RequestPart(required = false) MultipartFile proofOfPaymentPict) throws Exception {
 		if (proofOfPaymentPict == null) {
 			helper.updateBillPayment(billId, PaymentMethod.valueOf(paymentMethod));
@@ -77,6 +79,11 @@ public class BillRest {
 			helper.updateBillPayment(billId, PaymentMethod.valueOf(paymentMethod),
 					ProofOfPaymentExtension.valueOf(pictExtension), proofOfPaymentPict.getBytes());
 		}
+	}
+	
+	@PatchMapping(path = "bills/{billId}/payment")
+	public void updatePaymentInfo(@PathVariable long billId, @RequestBody String paymentStatus) throws Exception {
+		helper.transitionBillPaymentStatusTo(billId, PaymentStatus.valueOf(paymentStatus));
 	}
 
 	@GetMapping(path = "bills/{billId}/payment-img")

@@ -22,10 +22,35 @@ public class JdbcCondoRepository implements CondoRepository {
 	}
 
 	@Override
+	public Condo getBy(long id) {
+		try {
+			return template.queryForObject("select c.id as id, c.name as name, u.username as manager from condos c"
+					+ " join users u on u.id = c.manager where c.id=? ", this::mapper, id);
+
+		} catch (EmptyResultDataAccessException e) {
+			throw new NoSuchElementException("Unexistent Condo");
+		}
+	}
+
+	@Override
+	public CondoStats getStatsByCondoId(long condoId) {
+		try {
+			return template.queryForObject(
+					"select c.id as id, c.name as name, c.balance, u.username as manager, "
+							+ " (select count(*) from apartments where condo = c.id) as apartmentCount, "
+							+ " (select count(*) from apartments where condo = c.id and resident is null) as residentCount"
+							+ " from condos c join users u on u.id = c.manager " + " where c.id = ?",
+					this::statsMapper, condoId);
+		} catch (EmptyResultDataAccessException e) {
+			throw new NoSuchElementException("Unexistent Condo");
+		}
+	}
+
+	@Override
 	public List<Condo> getAllByUser(User user) {
-		String select = "select b.id as id, b.name as name, u.username as manager from condos b"
-				+ " join users u on u.id = b.manager ";
-		String orderby = " order by b.name asc";
+		String select = "select c.id as id, c.name as name, u.username as manager from condos c"
+				+ " join users u on u.id = c.manager ";
+		String orderby = " order by c.name asc";
 
 		if (user.getRole() == Role.MANAGER) {
 			return template.query(select + " where manager = (select id from users where username=?)" + orderby,
@@ -33,23 +58,17 @@ public class JdbcCondoRepository implements CondoRepository {
 		}
 
 		return template.query(
-				select + " join apartments a on b.id = a.condo"
+				select + " join apartments a on c.id = a.condo"
 						+ " where a.resident = (select id from users where username=?)" + orderby,
 				this::mapper, user.getUsername());
 	}
 
 	@Override
-	public CondoStats getStatsByCondoId(long condoId) {
-		try {
-			return template.queryForObject(
-					"select b.id as id, b.name as name, b.balance, u.username as manager, "
-							+ " (select count(*) from apartments where condo = b.id) as apartmentCount, "
-							+ " (select count(*) from apartments where condo = b.id and resident is null) as residentCount"
-							+ " from condos b join users u on u.id = b.manager " + " where b.id = ?",
-					this::statsMapper, condoId);
-		} catch (EmptyResultDataAccessException e) {
-			throw new NoSuchElementException("Unexistent Condo");
-		}
+	public void refreshBalanceWithBill(long billId, int sign) {
+		template.update(
+				"update condos set balance = balance + (? * (select b.due_amount from bills b where b.id = ?))"
+						+ " where id = (select a.condo from bills b join apartments a on a.id = b.apartment where b.id = ?)",
+				sign, billId, billId);
 	}
 
 	private Condo mapper(ResultSet rs, int rowNum) throws SQLException {
@@ -58,18 +77,5 @@ public class JdbcCondoRepository implements CondoRepository {
 
 	private CondoStats statsMapper(ResultSet rs, int rowNum) throws SQLException {
 		return new CondoStats(rs.getInt("apartmentCount"), rs.getInt("residentCount"), rs.getDouble("balance"));
-
-	}
-
-	@Override
-	public Condo getBy(long id) {
-		try {
-			return template.queryForObject( 
-				"select b.id as id, b.name as name, u.username as manager from condos b"
-				+ " join users u on u.id = b.manager where b.id=? ", this::mapper, id);
-
-		} catch(EmptyResultDataAccessException e) {
-			throw new NoSuchElementException("Unexistent Condo");
-		}
 	}
 }

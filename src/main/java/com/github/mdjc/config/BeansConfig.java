@@ -43,7 +43,7 @@ public class BeansConfig {
 	}
 	
 	@Bean
-	public PaymentHelper paymentHelper(NamedParameterJdbcTemplate template) {
-		return new DefaultPaymentHelper(billsProofOfPaymentDir, billRepository(template));
+	public PaymentHelper paymentHelper(BillRepository billRepository, CondoRepository condoRepository) {
+		return new DefaultPaymentHelper(billsProofOfPaymentDir, billRepository, condoRepository );
 	}
 }

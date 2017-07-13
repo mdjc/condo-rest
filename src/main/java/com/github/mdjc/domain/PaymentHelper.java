@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public interface PaymentHelper {
+	byte[] getProofOfPaymentImage(long billId) throws Exception;
+	
 	void updateBillPayment(long billId, PaymentMethod paymentMethod, ProofOfPaymentExtension extension, byte[] proofOfPaymentContent)
 			throws Exception;
 	void updateBillPayment(long billId, PaymentMethod paymentMethod) throws IOException;
-
-	byte[] getProofOfPaymentImage(long billId) throws Exception;
+	void transitionBillPaymentStatusTo(long billId, PaymentStatus status);
 
 	public default List<PaymentStatus> getAsEnumList(String[] paymentStatus) {
 		return Arrays.stream(paymentStatus).map(e -> PaymentStatus.valueOf(e))
