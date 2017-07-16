@@ -25,6 +25,8 @@ import com.github.mdjc.domain.Bill;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.BilltStats;
 import com.github.mdjc.domain.CondoBill;
+import com.github.mdjc.domain.ListMeta;
+import com.github.mdjc.domain.PaginationCriteria;
 import com.github.mdjc.domain.PaymentHelper;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
@@ -38,11 +40,32 @@ public class BillRest {
 
 	@Autowired
 	PaymentHelper helper;
-
+	
 	@GetMapping(path = "/condos/{condoId}/condoBills")
-	public Map<String, List<CondoBill>> getCondoBills(@PathVariable long condoId, @RequestParam String[] paymentStatus) {
+	public Map<String, List<CondoBill>> condoBills(@PathVariable long condoId,
+			@RequestParam(required = false) String[] paymentStatus,
+			@RequestParam(required = false) 
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+			@RequestParam(required = false) 
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+			@RequestParam(defaultValue = "0") int offset, 
+			@RequestParam(defaultValue = "0") int limit,
+			@RequestParam(defaultValue = "ASC") String order) {
 		List<PaymentStatus> statusList = helper.getAsEnumList(paymentStatus);
-		return ImmutableMap.of("condo-bills", billRepo.findBy(condoId, statusList));
+		PaginationCriteria pagCriteria = new PaginationCriteria(offset, limit,
+				PaginationCriteria.SortingOrder.valueOf(order.toUpperCase()));
+		return ImmutableMap.of("condo-bills", billRepo.findBy(condoId, statusList, from, to, pagCriteria));
+	}
+	
+	@GetMapping(path = "/condos/{condoId}/condoBills/meta")
+	public Map<String, ListMeta> condoBillsMeta(@PathVariable long condoId,
+			@RequestParam(required = false) String[] paymentStatus,
+			@RequestParam(required = false) 
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+			@RequestParam(required = false) 
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+		List<PaymentStatus> statusList = helper.getAsEnumList(paymentStatus);
+		return ImmutableMap.of("meta", new ListMeta(billRepo.countFindBy(condoId, statusList, from, to)));
 	}
 	
 	@GetMapping(path = "/condos/{condoId}/condoBills/{billId}")

@@ -73,21 +73,96 @@ public class BillRepositoryTest {
 				new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10), 350,
 						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
 						ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
-		List<CondoBill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION));
+		PaginationCriteria criteria = new PaginationCriteria(0, 200);
+		List<CondoBill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION), null,
+				null, criteria);
 		assertEquals(expected, actual);
 		assertCondoBillListEquals(expected, actual);
 	}
 
 	@Test
 	public void testFindBy_givenValidCondoIdAndPaymentStatusListForCondoWithoutPayments_shouldReturnEmptyList() {
-		List<CondoBill> actual = repository.findBy(3, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION));
+		PaginationCriteria criteria = new PaginationCriteria(0, 200);
+		List<CondoBill> actual = repository.findBy(3, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION), null,
+				null, criteria);
 		assertCondoBillListEquals(Collections.emptyList(), actual);
 	}
 
 	@Test
 	public void testFindBy_givenInvalidCondoIdAndPaymentStatusList_shouldReturnEmptyList() {
-		List<CondoBill> actual = repository.findBy(69, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION));
+		PaginationCriteria criteria = new PaginationCriteria(0, 200);
+		List<CondoBill> actual = repository.findBy(69, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION), null,
+				null, criteria);
 		assertCondoBillListEquals(Collections.emptyList(), actual);
+	}
+
+	@Test
+	public void testFindBy_givenValidCondoIdPaymentStatusListAndFrom_shouldReturnList() {
+		List<CondoBill> expected = Arrays.asList(new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10),
+				350, PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
+				ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
+		PaginationCriteria criteria = new PaginationCriteria(0, 200);
+		List<CondoBill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION),
+				LocalDate.of(2017, 7, 10), null, criteria);
+		assertEquals(expected, actual);
+		assertCondoBillListEquals(expected, actual);
+	}
+
+	@Test
+	public void testFindBy_givenValidCondoIdPaymentStatusListAndTo_shouldReturnList() {
+		List<CondoBill> expected = Arrays.asList(
+				new CondoBill(11, "consumo de gas", LocalDate.of(2017, 7, 1), 100,
+						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 1), PaymentMethod.CHECK,
+						ProofOfPaymentExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT))),
+				new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10), 350,
+						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
+						ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
+		PaginationCriteria criteria = new PaginationCriteria(0, 10);
+		List<CondoBill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION), null,
+				LocalDate.of(2017, 7, 10), criteria);
+		assertEquals(expected, actual);
+		assertCondoBillListEquals(expected, actual);
+	}
+
+	@Test
+	public void testFindBy_givenValidCondoIdPaymentStatusListAndToWithOffset_shouldReturnList() {
+		List<CondoBill> expected = Arrays.asList(new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10),
+				350, PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
+				ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
+		PaginationCriteria criteria = new PaginationCriteria(1, 10);
+		List<CondoBill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION), null,
+				LocalDate.of(2017, 7, 10), criteria);
+		assertEquals(expected, actual);
+		assertCondoBillListEquals(expected, actual);
+	}
+
+	@Test
+	public void testFindBy_givenValidCondoIdPaymentStatusListFromAndTo_shouldReturnList() {
+		List<CondoBill> expected = Arrays.asList(
+				new CondoBill(11, "consumo de gas", LocalDate.of(2017, 7, 1), 100,
+						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 1), PaymentMethod.CHECK,
+						ProofOfPaymentExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT))),
+				new CondoBill(9, "cuota mensual", LocalDate.of(2017, 7, 1), 10,
+						PaymentStatus.PAID_CONFIRMED, LocalDate.of(2017, 7, 1), PaymentMethod.TRANSFER,
+						ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))),
+				new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10), 350,
+						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
+						ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
+		PaginationCriteria criteria = new PaginationCriteria(0, 10);
+		List<CondoBill> actual = repository.findBy(1,
+				Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentStatus.PAID_CONFIRMED),
+				LocalDate.of(2017, 7, 1), LocalDate.of(2017, 7, 10), criteria);
+		assertEquals(expected, actual);
+		assertCondoBillListEquals(expected, actual);
+	}
+	
+	@Test
+	public void testCountFindBy_givenValidCondoIdPaymentStatusListFromAndTo_shouldReturnCount() {
+		int expected = 3;
+		int actual = repository.countFindBy(1,
+				Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentStatus.PAID_CONFIRMED),
+				LocalDate.of(2017, 7, 1), LocalDate.of(2017, 7, 10));
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -144,13 +219,12 @@ public class BillRepositoryTest {
 		Bill actual = repository.getBy(billId);
 		assertEquals(expected, actual);
 	}
-	
-	
+
 	@Test
 	public void testUpdatePaymentInfo_givenPaymentStatus_shouldPerformUpdate() {
 		int billId = 13;
-		Bill expected = new Bill(billId, "iluminación del pasillo", LocalDate.of(2017, 07, 10), 10, PaymentStatus.PAID_CONFIRMED,
-				LocalDate.now(), PaymentMethod.CHECK, ProofOfPaymentExtension.PNG);
+		Bill expected = new Bill(billId, "iluminación del pasillo", LocalDate.of(2017, 07, 10), 10,
+				PaymentStatus.PAID_CONFIRMED, LocalDate.now(), PaymentMethod.CHECK, ProofOfPaymentExtension.PNG);
 		repository.updatePaymentInfo(billId, PaymentStatus.PAID_CONFIRMED);
 		Bill actual = repository.getBy(billId);
 		assertEquals(expected, actual);
