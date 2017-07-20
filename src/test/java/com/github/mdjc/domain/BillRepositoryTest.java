@@ -42,7 +42,7 @@ public class BillRepositoryTest {
 	public void testGetCondoBillBy_givenValidId_shouldReturnCondoBill() {
 		CondoBill expected = new CondoBill(3, "cuota mensual", LocalDate.of(2017, 6, 15), 20,
 				PaymentStatus.PAID_CONFIRMED, LocalDate.of(2017, 6, 15), PaymentMethod.CHECK,
-				ProofOfPaymentExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT)));
+				ProofOfPaymentExtension.JPG, new Apartment("1D"));
 		CondoBill actual = repository.getCondoBilldBy(3);
 		assertCondoBillEquals(expected, actual);
 	}
@@ -142,9 +142,9 @@ public class BillRepositoryTest {
 				new CondoBill(11, "consumo de gas", LocalDate.of(2017, 7, 1), 100,
 						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 1), PaymentMethod.CHECK,
 						ProofOfPaymentExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT))),
-				new CondoBill(9, "cuota mensual", LocalDate.of(2017, 7, 1), 10,
-						PaymentStatus.PAID_CONFIRMED, LocalDate.of(2017, 7, 1), PaymentMethod.TRANSFER,
-						ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))),
+				new CondoBill(9, "cuota mensual", LocalDate.of(2017, 7, 1), 10, PaymentStatus.PAID_CONFIRMED,
+						LocalDate.of(2017, 7, 1), PaymentMethod.TRANSFER, ProofOfPaymentExtension.PNG,
+						new Apartment("1A", new User("virgi", Role.RESIDENT))),
 				new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10), 350,
 						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
 						ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
@@ -155,7 +155,7 @@ public class BillRepositoryTest {
 		assertEquals(expected, actual);
 		assertCondoBillListEquals(expected, actual);
 	}
-	
+
 	@Test
 	public void testCountFindBy_givenValidCondoIdPaymentStatusListFromAndTo_shouldReturnCount() {
 		int expected = 3;
@@ -199,6 +199,36 @@ public class BillRepositoryTest {
 	}
 
 	@Test
+	public void testAddBill_givenValidApartmentDueDateAmountAndDescription_shouldAddBill() {
+		CondoBill bill = new CondoBill("something", LocalDate.now(), 100, PaymentStatus.PENDING, LocalDate.now(),
+				new Apartment("1D"));
+		repository.addBill(1, bill);
+		CondoBill expected = new CondoBill(14, "something", LocalDate.now(), 100, PaymentStatus.PENDING,
+				LocalDate.now(), new Apartment("1D"));
+		assertCondoBillEquals(expected, repository.getCondoBilldBy(14));
+	}
+	
+	@Test
+	public void testDeleteBill_givenValidId_shouldDeleteBill() {
+		long billId = 5;
+		Bill bill = repository.getBy(billId);
+		assertTrue(bill != null);
+		repository.deleteBill(billId);
+		
+		try {
+			repository.getBy(billId);
+		} catch(NoSuchElementException e) {
+			assertTrue(true);
+		}
+	}
+	
+	
+	@Test(expected=NoSuchElementException.class)
+	public void testDeleteBill_givenInvalidId_shouldThrowException() {
+		repository.deleteBill(69);
+	}
+
+	@Test
 	public void testUpdatePaymentInfo_givenPaymentStatusMethodAndExtension_shouldPerformUpdate() {
 		int billId = 10;
 		repository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentMethod.TRANSFER,
@@ -233,7 +263,6 @@ public class BillRepositoryTest {
 	private void assertCondoBillEquals(CondoBill expected, CondoBill actual) {
 		assertBillEquals(expected, actual);
 		assertEquals(expected.getApartment(), expected.getApartment());
-		assertEquals(expected.getApartment().getResident(), actual.getApartment().getResident());
 	}
 
 	private void assertBillEquals(Bill expected, Bill actual) {

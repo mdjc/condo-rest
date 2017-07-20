@@ -10,9 +10,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +29,7 @@ import com.github.mdjc.domain.BilltStats;
 import com.github.mdjc.domain.CondoBill;
 import com.github.mdjc.domain.ListMeta;
 import com.github.mdjc.domain.PaginationCriteria;
-import com.github.mdjc.domain.PaymentHelper;
+import com.github.mdjc.domain.BillHelper;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
 import com.github.mdjc.domain.ProofOfPaymentExtension;
@@ -39,7 +41,7 @@ public class BillRest {
 	BillRepository billRepo;
 
 	@Autowired
-	PaymentHelper helper;
+	BillHelper helper;
 	
 	@GetMapping(path = "/condos/{condoId}/condoBills")
 	public Map<String, List<CondoBill>> condoBills(@PathVariable long condoId,
@@ -68,6 +70,11 @@ public class BillRest {
 		return ImmutableMap.of("meta", new ListMeta(billRepo.countFindBy(condoId, statusList, from, to)));
 	}
 	
+	@PostMapping(path = "/condos/{condoId}/condoBills")
+	public void addCondoBill(@PathVariable long condoId, @RequestBody CondoBill bill) {
+		billRepo.addBill(condoId, bill);
+	}	
+	
 	@GetMapping(path = "/condos/{condoId}/condoBills/{billId}")
 	public Map<String, CondoBill> getCondoBill(@PathVariable long billId) {
 		return ImmutableMap.of("condo-bill", billRepo.getCondoBilldBy(billId));
@@ -92,6 +99,11 @@ public class BillRest {
 		return ImmutableMap.of("bill", billRepo.getBy(billId));
 	}
 
+	@DeleteMapping(path = "bills/{billId}")
+	public void deleteCondoBill(@PathVariable long billId) {
+		helper.deleteBill(billId);
+	}
+	
 	@PutMapping(path = "bills/{billId}/payment", consumes = { "multipart/form-data" })
 	public void putPaymentInfo(@PathVariable long billId, @RequestPart String paymentMethod,
 			@RequestPart(required = false) MultipartFile proofOfPaymentPict) throws Exception {

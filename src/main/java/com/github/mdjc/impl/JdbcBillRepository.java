@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import com.github.mdjc.domain.Apartment;
 import com.github.mdjc.domain.Bill;
@@ -88,9 +90,10 @@ public class JdbcBillRepository implements BillRepository {
 		addToFilter(to, parameters, sqlBuilder);
 		sqlBuilder.append(" join users u on u.id = a.resident");
 		sqlBuilder.append(" where a.condo = :condo_id ");
-		sqlBuilder.append(String.format(" order by b.last_update_on %s, payment_status asc", pagCriteria.getSortingOrder()));
+		sqlBuilder.append(
+				String.format(" order by b.last_update_on %s, payment_status asc", pagCriteria.getSortingOrder()));
 		sqlBuilder.append(" limit :offset,:limit");
-		
+
 		return template.query(sqlBuilder.toString(), parameters, this::condoBillMapper);
 	}
 
@@ -120,6 +123,33 @@ public class JdbcBillRepository implements BillRepository {
 	}
 
 	@Override
+	public void addBill(long condoId, CondoBill bill) {
+		SqlParameterSource parameters = parametersMap("condo_id", condoId, "apartment_name",
+				bill.getApartment().getName(), "due_date", Date.valueOf(bill.getDueDate()), "due_amount",
+				bill.getDueAmount(), "description", bill.getDescription(), "last_update_on",
+				Date.valueOf(LocalDate.now()), "payment_status", PaymentStatus.PENDING.toString());
+
+		try {
+			template.update(
+					"insert into bills (apartment, due_date, due_amount, description, payment_status, last_update_on)"
+							+ " values((select id from apartments where name = :apartment_name and condo = :condo_id),"
+							+ " :due_date, :due_amount, :description, :payment_status, :last_update_on)", parameters);
+		} catch (DataIntegrityViolationException e) {
+			throw new IllegalArgumentException("invalid bill", e);
+		}
+	}
+	
+	@Override
+	public void deleteBill(long billId) {
+		SqlParameterSource parameters = parametersMap("bill_id", billId);
+		int affectedRows = template.update("delete from bills where id = :bill_id", parameters);
+		
+		if (affectedRows == 0) {
+			throw new NoSuchElementException("Unexistent Bill");
+		}
+	}
+
+	@Override
 	public void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod,
 			ProofOfPaymentExtension prooOfPaymentExt) {
 		MapSqlParameterSource parameters = parametersMap("bill_id", billId, "payment_status", paymentStatus.toString(),
@@ -127,8 +157,8 @@ public class JdbcBillRepository implements BillRepository {
 				"proof_of_payment_extension", prooOfPaymentExt.toString());
 
 		template.update("update bills set payment_status = :payment_status, payment_method = :payment_method, "
-						+ " last_update_on = :last_update_on, proof_of_payment_extension = :proof_of_payment_extension"
-						+ " where id = :bill_id  ", parameters);
+				+ " last_update_on = :last_update_on, proof_of_payment_extension = :proof_of_payment_extension"
+				+ " where id = :bill_id  ", parameters);
 	}
 
 	@Override
@@ -158,7 +188,7 @@ public class JdbcBillRepository implements BillRepository {
 				rs.getDouble("due_amount"), paymentStatus, rs.getDate("last_update_on").toLocalDate(), paymentMethod,
 				proofOfPaymentExt);
 	}
-	
+
 	private BilltStats statsMapper(ResultSet rs, int rownum) throws SQLException {
 		if (rs.getInt("condo_found") == 0) {
 			throw new NoSuchElementException("Unexistent Condo");
@@ -172,13 +202,14 @@ public class JdbcBillRepository implements BillRepository {
 		PaymentMethod paymentMethod = paymentMethodOrNull(rs);
 		PaymentStatus paymentStatus = paymentStatusOrNull(rs);
 		ProofOfPaymentExtension proofOfPaymentExt = proofOfPaymentExtensionOrNull(rs);
-		Apartment apartment = new Apartment(rs.getString("apartment_name"), new User(rs.getString("username"), Role.RESIDENT));
-		
+		Apartment apartment = new Apartment(rs.getString("apartment_name"),
+				new User(rs.getString("username"), Role.RESIDENT));
+
 		return new CondoBill(rs.getLong("id"), rs.getString("description"), rs.getDate("due_date").toLocalDate(),
 				rs.getDouble("due_amount"), paymentStatus, rs.getDate("last_update_on").toLocalDate(), paymentMethod,
 				proofOfPaymentExt, apartment);
 	}
-	
+
 	private void addPaymentListFilter(List<PaymentStatus> paymentStatusList, MapSqlParameterSource parameters,
 			StringBuilder sqlBuilder) {
 		if (!paymentStatusList.isEmpty()) {
@@ -193,7 +224,7 @@ public class JdbcBillRepository implements BillRepository {
 			parameters.addValue("from", from);
 		}
 	}
-	
+
 	private void addToFilter(LocalDate to, MapSqlParameterSource parameters, StringBuilder sqlBuilder) {
 		if (to != null) {
 			sqlBuilder.append(" and b.last_update_on <= :to");
@@ -211,12 +242,10 @@ public class JdbcBillRepository implements BillRepository {
 	}
 
 	private PaymentStatus paymentStatusOrNull(ResultSet rs) throws SQLException {
-		return rs.getString("payment_status") != null
-				? PaymentStatus.valueOf(rs.getString("payment_status")) : null;
+		return rs.getString("payment_status") != null ? PaymentStatus.valueOf(rs.getString("payment_status")) : null;
 	}
 
 	private PaymentMethod paymentMethodOrNull(ResultSet rs) throws SQLException {
-		return rs.getString("payment_method") != null
-				? PaymentMethod.valueOf(rs.getString("payment_method")) : null;
+		return rs.getString("payment_method") != null ? PaymentMethod.valueOf(rs.getString("payment_method")) : null;
 	}
 }

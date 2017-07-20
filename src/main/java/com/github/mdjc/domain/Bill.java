@@ -2,6 +2,8 @@ package com.github.mdjc.domain;
 
 import java.time.LocalDate;
 
+import com.github.mdjc.commons.args.Arguments;
+
 public class Bill {
 	private final long id;
 	private final String description;
@@ -15,18 +17,22 @@ public class Bill {
 	public Bill(long id, String description, LocalDate dueDate, double dueAmount, PaymentStatus paymentStatus,
 			LocalDate lastUpdateOn, PaymentMethod paymentMethod, ProofOfPaymentExtension proofOfPaymentExtension) {
 		this.id = id;
-		this.description = description;
-		this.dueDate = dueDate;
-		this.dueAmount = dueAmount;
+		this.description = Arguments.checkBlank(description, "Description should not be blank");
+		this.dueDate = Arguments.checkNull(dueDate, "DueDate should not be null");
+		this.dueAmount = Arguments.checkPositive(dueAmount, "DueAmount should be positive");
 		this.paymentStatus = paymentStatus;
-		this.paymentMethod = paymentMethod;
 		this.lastUpdateOn = lastUpdateOn;
+		this.paymentMethod = paymentMethod;
 		this.proofOfPaymentExtension = proofOfPaymentExtension;
 	}
 
 	public Bill(long id, String description, LocalDate dueDate, double dueAmount, PaymentStatus paymentStatus,
 			LocalDate lastUpdateOn) {
 		this(id, description, dueDate, dueAmount, paymentStatus, lastUpdateOn, null, null);
+	}
+	
+	public Bill(long id, String description, LocalDate dueDate, double dueAmount) {
+		this(id, description, dueDate, dueAmount, null, null, null, null);
 	}
 
 	public long getId() {

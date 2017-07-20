@@ -19,13 +19,14 @@ create table apartments (
 	condo int not null,
 	resident int,
 	foreign key(condo) references condos(id),
-	foreign key(resident) references users(id)	
+	foreign key(resident) references users(id),
+	unique key(id, condo)	
 );
 
 create table bills (
 	id int not null auto_increment primary key,
 	apartment int not null,
-	description varchar(60) not null,
+	description varchar(100) not null,
 	due_amount double not null,
 	due_date date not null,
 	payment_status varchar(30) not null,

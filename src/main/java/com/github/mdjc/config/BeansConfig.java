@@ -9,9 +9,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.OutlayRepository;
-import com.github.mdjc.domain.PaymentHelper;
+import com.github.mdjc.domain.BillHelper;
 import com.github.mdjc.domain.UserRepository;
-import com.github.mdjc.impl.DefaultPaymentHelper;
+import com.github.mdjc.impl.DefaultBillHelper;
 import com.github.mdjc.impl.JdbcBillRepository;
 import com.github.mdjc.impl.JdbcCondoRepository;
 import com.github.mdjc.impl.JdbcOutlayRepository;
@@ -43,7 +43,7 @@ public class BeansConfig {
 	}
 	
 	@Bean
-	public PaymentHelper paymentHelper(BillRepository billRepository, CondoRepository condoRepository) {
-		return new DefaultPaymentHelper(billsProofOfPaymentDir, billRepository, condoRepository );
+	public BillHelper paymentHelper(BillRepository billRepository, CondoRepository condoRepository) {
+		return new DefaultBillHelper(billsProofOfPaymentDir, billRepository, condoRepository );
 	}
 }

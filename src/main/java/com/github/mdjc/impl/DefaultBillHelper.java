@@ -9,17 +9,17 @@ import com.github.mdjc.domain.Bill;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.InvalidStatusChange;
-import com.github.mdjc.domain.PaymentHelper;
+import com.github.mdjc.domain.BillHelper;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
 import com.github.mdjc.domain.ProofOfPaymentExtension;
 
-public class DefaultPaymentHelper implements PaymentHelper {
+public class DefaultBillHelper implements BillHelper {
 	private final String billsProofOfPaymentDir;
 	private final BillRepository billRepository;
 	private final CondoRepository condoRepository;
 
-	public DefaultPaymentHelper(String billsProofOfPaymentDir, BillRepository billRepository,
+	public DefaultBillHelper(String billsProofOfPaymentDir, BillRepository billRepository,
 			CondoRepository condoRepository) {
 		this.billsProofOfPaymentDir = billsProofOfPaymentDir;
 		this.billRepository = billRepository;
@@ -73,5 +73,16 @@ public class DefaultPaymentHelper implements PaymentHelper {
 
 	private void rejectBillPayment(long billId) {
 		billRepository.updatePaymentInfo(billId, PaymentStatus.REJECTED);
+	}
+	
+	@Transactional
+	public void deleteBill(long billId) {
+		Bill bill = billRepository.getBy(billId);
+		
+		if (bill.getPaymentStatus() == PaymentStatus.PAID_CONFIRMED) {
+			condoRepository.refreshBalanceWithBill(billId, -1);			
+		}
+		
+		billRepository.deleteBill(billId);
 	}
 }

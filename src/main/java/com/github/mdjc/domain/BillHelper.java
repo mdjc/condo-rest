@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface PaymentHelper {
+public interface BillHelper {
 	byte[] getProofOfPaymentImage(long billId) throws Exception;
 	
 	void updateBillPayment(long billId, PaymentMethod paymentMethod, ProofOfPaymentExtension extension, byte[] proofOfPaymentContent)
@@ -14,6 +14,8 @@ public interface PaymentHelper {
 	void updateBillPayment(long billId, PaymentMethod paymentMethod) throws IOException;
 	void transitionBillPaymentStatusTo(long billId, PaymentStatus status);
 
+	void deleteBill(long billId);
+	
 	public default List<PaymentStatus> getAsEnumList(String[] paymentStatus) {
 		if (paymentStatus == null) {
 			return Collections.emptyList();
