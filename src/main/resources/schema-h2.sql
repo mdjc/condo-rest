@@ -10,6 +10,7 @@ create table condos (
 	name varchar(40) not null,
 	manager int not null,
 	balance double not null default 0,
+	billing_day_of_month int,
 	foreign	key (manager) references users(id)
 );
 
@@ -18,6 +19,7 @@ create table apartments (
 	name varchar(20) not null,
 	condo int not null,
 	resident int,
+	monthly_share double,
 	foreign key(condo) references condos(id),
 	foreign key(resident) references users(id),
 	unique key(id, condo)	

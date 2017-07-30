@@ -6,19 +6,19 @@ insert into users (username, password, role)  values('aldo', '$2a$10$nZAnnVBnl0r
 insert into users (username, password, role)  values('john', '$2a$10$nZAnnVBnl0r23Iii2FBUPOJNcCFL9x9MakFDdlzw2vbN5tUeWcHui', 'RESIDENT');
 insert into users (username, password, role)  values('mary', '$2a$10$nZAnnVBnl0r23Iii2FBUPOJNcCFL9x9MakFDdlzw2vbN5tUeWcHui', 'RESIDENT');
 
-insert into condos (name, manager, balance) values ('Shadai I', (select id from users where username='mirna' and role='MANAGER'), 100);
-insert into condos (name, manager, balance) values ('Loring  Place 2333', (select id from users where username='mirna' and role='MANAGER'), 50);
-insert into condos (name, manager, balance) values ('Mira Flores IV', (select id from users where username='luis' and role='MANAGER'), 220);
-insert into condos (name, manager, balance) values('Baldwing IV', (select id from users where username='luis' and role='MANAGER'), 0);
+insert into condos (name, manager, balance, billing_day_of_month) values ('Shadai I', (select id from users where username='mirna' and role='MANAGER'), 100, 15);
+insert into condos (name, manager, balance, billing_day_of_month) values ('Loring  Place 2333', (select id from users where username='mirna' and role='MANAGER'), 50, 1);
+insert into condos (name, manager, balance, billing_day_of_month) values ('Mira Flores IV', (select id from users where username='luis' and role='MANAGER'), 220, 1);
+insert into condos (name, manager, balance, billing_day_of_month) values('Baldwing IV', (select id from users where username='luis' and role='MANAGER'), 0, 1);
 
-insert into apartments (name, condo, resident) values ('1A', (select id from condos where name = 'Shadai I'), (select id from users where username='virgi'));
-insert into apartments (name, condo, resident) values ('1B', (select id from condos where name = 'Shadai I'), null);
-insert into apartments (name, condo, resident) values ('1C', (select id from condos where name = 'Shadai I'), null);
-insert into apartments (name, condo, resident) values ('1D', (select id from condos where name = 'Shadai I'), (select id from users where username='aldo'));
+insert into apartments (name, condo, resident, monthly_share) values ('1A', (select id from condos where name = 'Shadai I'), (select id from users where username='virgi'), 10);
+insert into apartments (name, condo, resident, monthly_share) values ('1B', (select id from condos where name = 'Shadai I'), null, 10);
+insert into apartments (name, condo, resident, monthly_share) values ('1C', (select id from condos where name = 'Shadai I'), null, 15);
+insert into apartments (name, condo, resident, monthly_share) values ('1D', (select id from condos where name = 'Shadai I'), (select id from users where username='aldo'), 15);
 
-insert into apartments (name, condo, resident) values ('1', (select id from condos where name = 'Loring  Place 2333'), (select id from users where username='john'));
-insert into apartments (name, condo, resident) values ('2', (select id from condos where name = 'Loring  Place 2333'), (select id from users where username='mary'));
-insert into apartments (name, condo, resident) values ('25F', (select id from condos where name = 'Mira Flores IV'), (select id from users where username='mary'));
+insert into apartments (name, condo, resident, monthly_share) values ('1', (select id from condos where name = 'Loring  Place 2333'), (select id from users where username='john'), 600);
+insert into apartments (name, condo, resident, monthly_share) values ('2', (select id from condos where name = 'Loring  Place 2333'), (select id from users where username='mary'), 300);
+insert into apartments (name, condo, resident, monthly_share) values ('25F', (select id from condos where name = 'Mira Flores IV'), (select id from users where username='mary'), 300);
 
 insert into bills (apartment, description, due_amount, due_date, payment_status, last_update_on, payment_method, proof_of_payment_extension)
 values((select id from apartments where name='1'), 'cuota mensual',  '20', '2017-6-15', 'PAID_CONFIRMED', '2017-6-15', 'CHECK', 'JPG');
