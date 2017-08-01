@@ -1,5 +1,5 @@
 package com.github.mdjc.domain;
 
-public enum ProofOfPaymentExtension {
+public enum ImageExtension {
 	JPG, GIF, PNG
 }

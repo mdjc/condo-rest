@@ -24,7 +24,7 @@ import com.github.mdjc.domain.CondoBill;
 import com.github.mdjc.domain.PaginationCriteria;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
-import com.github.mdjc.domain.ProofOfPaymentExtension;
+import com.github.mdjc.domain.ImageExtension;
 import com.github.mdjc.domain.Role;
 import com.github.mdjc.domain.User;
 
@@ -151,7 +151,7 @@ public class JdbcBillRepository implements BillRepository {
 
 	@Override
 	public void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod,
-			ProofOfPaymentExtension prooOfPaymentExt) {
+			ImageExtension prooOfPaymentExt) {
 		MapSqlParameterSource parameters = parametersMap("bill_id", billId, "payment_status", paymentStatus.toString(),
 				"payment_method", paymentMethod.toString(), "last_update_on", Date.valueOf(LocalDate.now()),
 				"proof_of_payment_extension", prooOfPaymentExt.toString());
@@ -182,7 +182,7 @@ public class JdbcBillRepository implements BillRepository {
 	private Bill mapper(ResultSet rs, int rownum) throws SQLException {
 		PaymentMethod paymentMethod = paymentMethodOrNull(rs);
 		PaymentStatus paymentStatus = paymentStatusOrNull(rs);
-		ProofOfPaymentExtension proofOfPaymentExt = proofOfPaymentExtensionOrNull(rs);
+		ImageExtension proofOfPaymentExt = proofOfPaymentExtensionOrNull(rs);
 
 		return new Bill(rs.getLong("id"), rs.getString("description"), rs.getDate("due_date").toLocalDate(),
 				rs.getDouble("due_amount"), paymentStatus, rs.getDate("last_update_on").toLocalDate(), paymentMethod,
@@ -201,7 +201,7 @@ public class JdbcBillRepository implements BillRepository {
 	private CondoBill condoBillMapper(ResultSet rs, int rownume) throws SQLException {
 		PaymentMethod paymentMethod = paymentMethodOrNull(rs);
 		PaymentStatus paymentStatus = paymentStatusOrNull(rs);
-		ProofOfPaymentExtension proofOfPaymentExt = proofOfPaymentExtensionOrNull(rs);
+		ImageExtension proofOfPaymentExt = proofOfPaymentExtensionOrNull(rs);
 		Apartment apartment = new Apartment(rs.getString("apartment_name"),
 				new User(rs.getString("username"), Role.RESIDENT));
 
@@ -236,9 +236,9 @@ public class JdbcBillRepository implements BillRepository {
 		return paymentStatusList.stream().map(e -> e.toString()).collect(Collectors.toList());
 	}
 
-	private ProofOfPaymentExtension proofOfPaymentExtensionOrNull(ResultSet rs) throws SQLException {
+	private ImageExtension proofOfPaymentExtensionOrNull(ResultSet rs) throws SQLException {
 		return rs.getString("proof_of_payment_extension") != null
-				? ProofOfPaymentExtension.valueOf(rs.getString("proof_of_payment_extension")) : null;
+				? ImageExtension.valueOf(rs.getString("proof_of_payment_extension")) : null;
 	}
 
 	private PaymentStatus paymentStatusOrNull(ResultSet rs) throws SQLException {

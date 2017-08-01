@@ -27,7 +27,7 @@ import com.github.mdjc.domain.CondoBill;
 import com.github.mdjc.domain.PaginationCriteria;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
-import com.github.mdjc.domain.ProofOfPaymentExtension;
+import com.github.mdjc.domain.ImageExtension;
 import com.github.mdjc.domain.Role;
 import com.github.mdjc.domain.User;
 
@@ -47,7 +47,7 @@ public class JdbcBillRepositoryTest {
 	@Test
 	public void testGetBy_givenValidId_shouldReturnBill() {
 		Bill expected = new Bill(3, "cuota mensual", LocalDate.of(2017, 6, 15), 20, PaymentStatus.PAID_CONFIRMED,
-				LocalDate.of(2017, 6, 15), PaymentMethod.CHECK, ProofOfPaymentExtension.JPG);
+				LocalDate.of(2017, 6, 15), PaymentMethod.CHECK, ImageExtension.JPG);
 		Bill actual = repository.getBy(3);
 		assertEquals(expected, actual);
 	}
@@ -61,7 +61,7 @@ public class JdbcBillRepositoryTest {
 	public void testGetCondoBillBy_givenValidId_shouldReturnCondoBill() {
 		CondoBill expected = new CondoBill(3, "cuota mensual", LocalDate.of(2017, 6, 15), 20,
 				PaymentStatus.PAID_CONFIRMED, LocalDate.of(2017, 6, 15), PaymentMethod.CHECK,
-				ProofOfPaymentExtension.JPG, new Apartment("1D"));
+				ImageExtension.JPG, new Apartment("1D"));
 		CondoBill actual = repository.getCondoBilldBy(3);
 		assertCondoBillEquals(expected, actual);
 	}
@@ -88,10 +88,10 @@ public class JdbcBillRepositoryTest {
 		List<CondoBill> expected = Arrays.asList(
 				new CondoBill(11, "consumo de gas", LocalDate.of(2017, 7, 1), 100,
 						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 1), PaymentMethod.CHECK,
-						ProofOfPaymentExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT))),
+						ImageExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT))),
 				new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10), 350,
 						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
-						ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
+						ImageExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
 		PaginationCriteria criteria = new PaginationCriteria(0, 200);
 		List<CondoBill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION), null,
 				null, criteria);
@@ -119,7 +119,7 @@ public class JdbcBillRepositoryTest {
 	public void testFindBy_givenValidCondoIdPaymentStatusListAndFrom_shouldReturnList() {
 		List<CondoBill> expected = Arrays.asList(new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10),
 				350, PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
-				ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
+				ImageExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
 		PaginationCriteria criteria = new PaginationCriteria(0, 200);
 		List<CondoBill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION),
 				LocalDate.of(2017, 7, 10), null, criteria);
@@ -132,10 +132,10 @@ public class JdbcBillRepositoryTest {
 		List<CondoBill> expected = Arrays.asList(
 				new CondoBill(11, "consumo de gas", LocalDate.of(2017, 7, 1), 100,
 						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 1), PaymentMethod.CHECK,
-						ProofOfPaymentExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT))),
+						ImageExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT))),
 				new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10), 350,
 						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
-						ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
+						ImageExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
 		PaginationCriteria criteria = new PaginationCriteria(0, 10);
 		List<CondoBill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION), null,
 				LocalDate.of(2017, 7, 10), criteria);
@@ -147,7 +147,7 @@ public class JdbcBillRepositoryTest {
 	public void testFindBy_givenValidCondoIdPaymentStatusListAndToWithOffset_shouldReturnList() {
 		List<CondoBill> expected = Arrays.asList(new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10),
 				350, PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
-				ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
+				ImageExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
 		PaginationCriteria criteria = new PaginationCriteria(1, 10);
 		List<CondoBill> actual = repository.findBy(1, Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION), null,
 				LocalDate.of(2017, 7, 10), criteria);
@@ -160,13 +160,13 @@ public class JdbcBillRepositoryTest {
 		List<CondoBill> expected = Arrays.asList(
 				new CondoBill(11, "consumo de gas", LocalDate.of(2017, 7, 1), 100,
 						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 1), PaymentMethod.CHECK,
-						ProofOfPaymentExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT))),
+						ImageExtension.JPG, new Apartment("1D", new User("aldo", Role.RESIDENT))),
 				new CondoBill(9, "cuota mensual", LocalDate.of(2017, 7, 1), 10, PaymentStatus.PAID_CONFIRMED,
-						LocalDate.of(2017, 7, 1), PaymentMethod.TRANSFER, ProofOfPaymentExtension.PNG,
+						LocalDate.of(2017, 7, 1), PaymentMethod.TRANSFER, ImageExtension.PNG,
 						new Apartment("1A", new User("virgi", Role.RESIDENT))),
 				new CondoBill(13, "iluminación del pasillo", LocalDate.of(2017, 7, 10), 350,
 						PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.of(2017, 7, 10), PaymentMethod.CHECK,
-						ProofOfPaymentExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
+						ImageExtension.PNG, new Apartment("1A", new User("virgi", Role.RESIDENT))));
 		PaginationCriteria criteria = new PaginationCriteria(0, 10);
 		List<CondoBill> actual = repository.findBy(1,
 				Arrays.asList(PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentStatus.PAID_CONFIRMED),
@@ -188,11 +188,11 @@ public class JdbcBillRepositoryTest {
 	public void testFindBy_givenValidCondoUsernameAndPaymentStatusList_shouldReturnList() {
 		List<Bill> expected = Arrays.asList(
 				new Bill(8, "cuota mensual", LocalDate.of(2017, 06, 27), 10, PaymentStatus.REJECTED,
-						LocalDate.of(2017, 06, 27), PaymentMethod.TRANSFER, ProofOfPaymentExtension.PNG),
+						LocalDate.of(2017, 06, 27), PaymentMethod.TRANSFER, ImageExtension.PNG),
 				new Bill(10, "cuota mensual", LocalDate.of(2017, 07, 01), 10, PaymentStatus.PENDING,
 						LocalDate.of(2017, 07, 01)),
 				new Bill(12, "consumo de gas", LocalDate.of(2017, 07, 01), 200, PaymentStatus.REJECTED,
-						LocalDate.of(2017, 07, 01), PaymentMethod.DEPOSIT, ProofOfPaymentExtension.JPG));
+						LocalDate.of(2017, 07, 01), PaymentMethod.DEPOSIT, ImageExtension.JPG));
 		List<Bill> actual = repository.findBy(1, "aldo", Arrays.asList(PaymentStatus.PENDING, PaymentStatus.REJECTED));
 		assertEquals(expected, actual);
 		assertBillListEquals(expected, actual);
@@ -251,10 +251,10 @@ public class JdbcBillRepositoryTest {
 	public void testUpdatePaymentInfo_givenPaymentStatusMethodAndExtension_shouldPerformUpdate() {
 		int billId = 10;
 		repository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentMethod.TRANSFER,
-				ProofOfPaymentExtension.PNG);
+				ImageExtension.PNG);
 		Bill expected = new Bill(10, "cuota mensual", LocalDate.of(2017, 07, 01), 10,
 				PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.now(), PaymentMethod.TRANSFER,
-				ProofOfPaymentExtension.PNG);
+				ImageExtension.PNG);
 		Bill actual = repository.getBy(billId);
 		assertEquals(expected, actual);
 	}
@@ -263,7 +263,7 @@ public class JdbcBillRepositoryTest {
 	public void testUpdatePaymentInfo_givenPaymentStatusAndMethod_shouldPerformUpdate() {
 		int billId = 8;
 		Bill expected = new Bill(billId, "cuota mensual", LocalDate.of(2017, 06, 27), 10, PaymentStatus.REJECTED,
-				LocalDate.now(), PaymentMethod.CHECK, ProofOfPaymentExtension.PNG);
+				LocalDate.now(), PaymentMethod.CHECK, ImageExtension.PNG);
 		repository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentMethod.CHECK);
 		Bill actual = repository.getBy(billId);
 		assertEquals(expected, actual);
@@ -273,7 +273,7 @@ public class JdbcBillRepositoryTest {
 	public void testUpdatePaymentInfo_givenPaymentStatus_shouldPerformUpdate() {
 		int billId = 13;
 		Bill expected = new Bill(billId, "iluminación del pasillo", LocalDate.of(2017, 07, 10), 10,
-				PaymentStatus.PAID_CONFIRMED, LocalDate.now(), PaymentMethod.CHECK, ProofOfPaymentExtension.PNG);
+				PaymentStatus.PAID_CONFIRMED, LocalDate.now(), PaymentMethod.CHECK, ImageExtension.PNG);
 		repository.updatePaymentInfo(billId, PaymentStatus.PAID_CONFIRMED);
 		Bill actual = repository.getBy(billId);
 		assertEquals(expected, actual);

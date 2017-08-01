@@ -47,5 +47,6 @@ create table outlays (
 	condo int not null,
 	supplier varchar(40) default '',
 	comment varchar(200) default '',
+	receipt_image_extension varchar(3) not null,	
 	foreign key(condo) references condos(id)
 );

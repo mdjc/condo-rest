@@ -12,10 +12,10 @@ public class Bill {
 	private final PaymentStatus paymentStatus;
 	private final PaymentMethod paymentMethod;
 	private final LocalDate lastUpdateOn;
-	private final ProofOfPaymentExtension proofOfPaymentExtension;
+	private final ImageExtension proofOfPaymentExtension;
 
 	public Bill(long id, String description, LocalDate dueDate, double dueAmount, PaymentStatus paymentStatus,
-			LocalDate lastUpdateOn, PaymentMethod paymentMethod, ProofOfPaymentExtension proofOfPaymentExtension) {
+			LocalDate lastUpdateOn, PaymentMethod paymentMethod, ImageExtension proofOfPaymentExtension) {
 		this.id = id;
 		this.description = Arguments.checkBlank(description, "Description should not be blank");
 		this.dueDate = Arguments.checkNull(dueDate, "DueDate should not be null");
@@ -63,7 +63,7 @@ public class Bill {
 		return paymentMethod;
 	}
 	
-	public ProofOfPaymentExtension getProofOfPaymentExtension() {
+	public ImageExtension getProofOfPaymentExtension() {
 		return proofOfPaymentExtension;
 	}
 

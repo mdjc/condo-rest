@@ -17,7 +17,7 @@ public interface BillRepository {
 	void deleteBill(long billId);
 	
 	void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod,
-			ProofOfPaymentExtension prooOfPaymentExt);
+			ImageExtension prooOfPaymentExt);
 	void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod);
 	void updatePaymentInfo(long billId, PaymentStatus paymentStatus);
 }

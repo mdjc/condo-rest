@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public interface BillHelper {
 	byte[] getProofOfPaymentImage(long billId) throws Exception;
 	
-	void updateBillPayment(long billId, PaymentMethod paymentMethod, ProofOfPaymentExtension extension, byte[] proofOfPaymentContent)
+	void updateBillPayment(long billId, PaymentMethod paymentMethod, ImageExtension extension, byte[] proofOfPaymentContent)
 			throws Exception;
 	void updateBillPayment(long billId, PaymentMethod paymentMethod) throws IOException;
 	void transitionBillPaymentStatusTo(long billId, PaymentStatus status);

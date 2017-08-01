@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,15 +23,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.github.mdjc.commons.files.Files;
 import com.github.mdjc.domain.Bill;
+import com.github.mdjc.domain.BillHelper;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.BilltStats;
 import com.github.mdjc.domain.CondoBill;
+import com.github.mdjc.domain.ImageExtension;
 import com.github.mdjc.domain.ListMeta;
 import com.github.mdjc.domain.PaginationCriteria;
-import com.github.mdjc.domain.BillHelper;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
-import com.github.mdjc.domain.ProofOfPaymentExtension;
 import com.google.common.collect.ImmutableMap;
 
 @RestController
@@ -112,7 +111,7 @@ public class BillRest {
 		} else {
 			String pictExtension = Files.getExtension(proofOfPaymentPict.getOriginalFilename()).toUpperCase();
 			helper.updateBillPayment(billId, PaymentMethod.valueOf(paymentMethod),
-					ProofOfPaymentExtension.valueOf(pictExtension), proofOfPaymentPict.getBytes());
+					ImageExtension.valueOf(pictExtension), proofOfPaymentPict.getBytes());
 		}
 	}
 	
@@ -130,21 +129,8 @@ public class BillRest {
 			return new ResponseEntity<>(new byte[] {}, headers, HttpStatus.NOT_FOUND);
 		}
 
-		MediaType contentType = null;
-		switch (bill.getProofOfPaymentExtension()) {
-		case JPG:
-			contentType = MediaType.IMAGE_JPEG;
-			break;
-		case PNG:
-			contentType = MediaType.IMAGE_PNG;
-			break;
-		case GIF:
-			contentType = MediaType.IMAGE_GIF;
-			break;
-		}
-
 		byte[] bytes = helper.getProofOfPaymentImage(billId);
-		headers.setContentType(contentType);
+		headers.setContentType(RestUtils.getContentType(bill.getProofOfPaymentExtension()));
 		headers.setContentLength(bytes.length);
 		return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
 	}

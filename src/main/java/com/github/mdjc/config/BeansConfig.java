@@ -6,12 +6,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.github.mdjc.domain.BillHelper;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.CondoRepository;
+import com.github.mdjc.domain.OutlayHelper;
 import com.github.mdjc.domain.OutlayRepository;
-import com.github.mdjc.domain.BillHelper;
 import com.github.mdjc.domain.UserRepository;
 import com.github.mdjc.impl.DefaultBillHelper;
+import com.github.mdjc.impl.DefaultOutlayHelper;
 import com.github.mdjc.impl.JdbcBillRepository;
 import com.github.mdjc.impl.JdbcCondoRepository;
 import com.github.mdjc.impl.JdbcOutlayRepository;
@@ -21,6 +23,9 @@ import com.github.mdjc.impl.JdbcUserRepository;
 public class BeansConfig {
 	@Value("${app.bills.payment.images.directory}")
 	String billsProofOfPaymentDir;
+	
+	@Value("${app.outlays.receipt.images.directory}")
+	String outlaysReceiptImagesDir;
 	
 	@Bean
 	public UserRepository userRepository(JdbcTemplate template){
@@ -43,7 +48,12 @@ public class BeansConfig {
 	}
 	
 	@Bean
-	public BillHelper paymentHelper(BillRepository billRepository, CondoRepository condoRepository) {
+	public BillHelper billHelper(BillRepository billRepository, CondoRepository condoRepository) {
 		return new DefaultBillHelper(billsProofOfPaymentDir, billRepository, condoRepository );
+	}
+	
+	@Bean
+	public OutlayHelper outlayHelper() {
+		return new DefaultOutlayHelper(outlaysReceiptImagesDir);
 	}
 }

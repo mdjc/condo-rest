@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.github.mdjc.config.BeansConfig;
+import com.github.mdjc.domain.ImageExtension;
 import com.github.mdjc.domain.Outlay;
 import com.github.mdjc.domain.OutlayCategory;
 import com.github.mdjc.domain.OutlayRepository;
@@ -30,14 +31,28 @@ import com.github.mdjc.domain.PaginationCriteria.SortingOrder;
 @Import(BeansConfig.class)
 public class JdbcOutlayRepositoryTest {
 	@Autowired
-	private NamedParameterJdbcTemplate template;	
+	private NamedParameterJdbcTemplate template;
 	private OutlayRepository repository;
-	
+
 	@Before
 	public void init() {
 		repository = new JdbcOutlayRepository(template);
 	}
-	
+
+	@Test
+	public void testGetBy_givenValidId_shouldReturnOutlay() {
+		long id = 4;
+		Outlay expected = new Outlay(id, OutlayCategory.SECURITY, 55.36, LocalDate.of(2017, 8, 16), "Watchman & Asocs",
+				"", ImageExtension.JPG);
+		Outlay actual = repository.getBy(id);
+		assertOutlayEquals(expected, actual);
+	}
+
+	@Test(expected = NoSuchElementException.class)
+	public void testGetBy_givenInvalidId_shouldThrowException() {
+		repository.getBy(69);
+	}
+
 	@Test
 	public void testGetStatsBy_givenValidCondoFromAndTo_shouldReturnOutlay() {
 		OutlayStats expected = new OutlayStats(25);
@@ -52,49 +67,49 @@ public class JdbcOutlayRepositoryTest {
 
 	@Test
 	public void testFindBy_givenFromLimitAndSortAsc_shouldReturnOneOutlay() {
-		List<Outlay> expected = Arrays.asList(
-				new Outlay(1, OutlayCategory.SECURITY, 15, LocalDate.of(2017, 6, 16), "Watchman Dominicana", ""));
+		List<Outlay> expected = Arrays.asList(new Outlay(1, OutlayCategory.SECURITY, 15, LocalDate.of(2017, 6, 16),
+				"Watchman Dominicana", "", ImageExtension.JPG));
 		List<Outlay> actual = repository.findBy(1, LocalDate.of(2017, 6, 16), null, new PaginationCriteria(0, 1));
 		assertEquals(expected, actual);
 	}
-	
+
 	@Test
 	public void testFindBy_givenFromToLimitAndSortAsc_shouldReturnTwoOutlays() {
 		List<Outlay> expected = Arrays.asList(
-				new Outlay(1, OutlayCategory.SECURITY, 15, LocalDate.of(2017, 6, 16), "Watchman Dominicana", ""),
+				new Outlay(1, OutlayCategory.SECURITY, 15, LocalDate.of(2017, 6, 16), "Watchman Dominicana", "",
+						ImageExtension.JPG),
 				new Outlay(2, OutlayCategory.REPARATION, 10, LocalDate.of(2017, 7, 16), "Edenorte",
-						"Reparación Lámpara Pasillo"));
+						"Reparación Lámpara Pasillo", ImageExtension.JPG));
 		List<Outlay> actual = repository.findBy(1, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 8, 16),
 				new PaginationCriteria(0, 2));
-		testEquals(expected, actual);
+		assertOutlayListEquals(expected, actual);
 	}
-
 
 	@Test
 	public void testFindBy_givenFromToOffsetLimitAndSortAsc_shouldReturnOneOutlay() {
 		List<Outlay> expected = Arrays.asList(new Outlay(2, OutlayCategory.REPARATION, 10, LocalDate.of(2017, 7, 16),
-				"Edenorte", "Reparación Lámpara Pasillo"));
+				"Edenorte", "Reparación Lámpara Pasillo", ImageExtension.JPG));
 		List<Outlay> actual = repository.findBy(1, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 8, 16),
 				new PaginationCriteria(1, 1));
-		testEquals(expected, actual);
+		assertOutlayListEquals(expected, actual);
 	}
-	
+
 	@Test
 	public void testFindBy_givenFromToLimitAndSortDesc_shouldReturnOneOutlaySortedDesc() {
 		List<Outlay> expected = Arrays.asList(new Outlay(4, OutlayCategory.SECURITY, 55.36, LocalDate.of(2017, 8, 16),
-				"Watchman & Asocs", ""));
+				"Watchman & Asocs", "", ImageExtension.JPG));
 		List<Outlay> actual = repository.findBy(2, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 8, 16),
 				new PaginationCriteria(0, 1, SortingOrder.DESC));
-		testEquals(expected, actual);
+		assertOutlayListEquals(expected, actual);
 	}
-	
+
 	@Test
 	public void testFindBy_givenFromToOffsetLimitAndSortDesc_shouldReturnOneOutlaySortedDesc() {
 		List<Outlay> expected = Arrays.asList(new Outlay(3, OutlayCategory.REPARATION, 10, LocalDate.of(2017, 6, 16),
-				"Edenorte", "Reparación Lámpara Principal"));
+				"Edenorte", "Reparación Lámpara Principal", ImageExtension.PNG));
 		List<Outlay> actual = repository.findBy(2, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 8, 16),
 				new PaginationCriteria(1, 1, SortingOrder.DESC));
-		testEquals(expected, actual);
+		assertOutlayListEquals(expected, actual);
 	}
 
 	@Test
@@ -103,17 +118,22 @@ public class JdbcOutlayRepositoryTest {
 		int actual = repository.countFindBy(1, LocalDate.of(2017, 6, 16), LocalDate.of(2017, 7, 16));
 		assertEquals(expected, actual);
 	}
-	
-	private void testEquals(List<Outlay> expected, List<Outlay> actual) {
+
+	private void assertOutlayListEquals(List<Outlay> expected, List<Outlay> actual) {
 		assertEquals(expected, actual);
 
 		for (int i = 0; i < expected.size(); i++) {
-			assertEquals(expected.get(i).getId(), actual.get(i).getId());
-			assertEquals(expected.get(i).getCategory(), actual.get(i).getCategory());
-			assertEquals(expected.get(i).getCreatedOn(), actual.get(i).getCreatedOn());
-			assertEquals(expected.get(i).getSupplier(), actual.get(i).getSupplier());
-			assertEquals(expected.get(i).getComment(), actual.get(i).getComment());
-			assertTrue(expected.get(i).getAmount() - actual.get(i).getAmount() == 0);
+			assertOutlayEquals(expected.get(i), actual.get(i));
 		}
+	}
+
+	private void assertOutlayEquals(Outlay expected, Outlay actual) {
+		assertEquals(expected.getId(), actual.getId());
+		assertEquals(expected.getCategory(), actual.getCategory());
+		assertEquals(expected.getCreatedOn(), actual.getCreatedOn());
+		assertEquals(expected.getSupplier(), actual.getSupplier());
+		assertEquals(expected.getComment(), actual.getComment());
+		assertTrue(expected.getAmount() - actual.getAmount() == 0);
+		assertEquals(expected.getReceiptImageExtension(), actual.getReceiptImageExtension());
 	}
 }

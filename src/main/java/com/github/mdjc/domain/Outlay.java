@@ -11,15 +11,17 @@ public class Outlay implements Comparable<Outlay>{
 	private final LocalDate createdOn;
 	private final String supplier;
 	private final String comment;
+	private final ImageExtension receiptImageExtension; 
 	
 	public Outlay(long id, OutlayCategory category, double amount, LocalDate createdOn, String supplier,
-			String comment) {
+			String comment, ImageExtension receiptImageExtension) {
 		this.id = id;
 		this.category = category;
 		this.amount = Arguments.checkPositive(amount);
 		this.createdOn = Arguments.checkNull(createdOn);
 		this.supplier = supplier;
 		this.comment = comment;
+		this.receiptImageExtension = receiptImageExtension;
 	}
 
 	public long getId() {
@@ -50,6 +52,10 @@ public class Outlay implements Comparable<Outlay>{
 		return comment;
 	}
 	
+	public ImageExtension getReceiptImageExtension() {
+		return receiptImageExtension;
+	}
+
 	@Override
 	public boolean equals(Object other) {
 		return other instanceof Outlay && compareTo((Outlay) other) == 0;
