@@ -62,4 +62,4 @@ values((select id from apartments where name='1A'), 'iluminación del pasillo', 
 insert into outlays (amount, category, condo, created_on, supplier, comment) values (15, 'SECURITY', 1, '2017-6-16', 'Watchman Dominicana', '');
 insert into outlays (amount, category, condo, created_on, supplier, comment) values (10, 'REPARATION', 1, '2017-7-16', 'Edenorte', 'Reparación Lámpara Pasillo');
 insert into outlays (amount, category, condo, created_on, supplier, comment) values (10, 'REPARATION', 2, '2017-6-16', 'Edenorte', 'Reparación Lámpara Principal');
-insert into outlays (amount, category, condo, created_on, supplier, comment) values (55.36, 'SECURITY', 2, '2017-6-16', 'Watchman & Asocs', '');
+insert into outlays (amount, category, condo, created_on, supplier, comment) values (55.36, 'SECURITY', 2, '2017-8-16', 'Watchman & Asocs', '');

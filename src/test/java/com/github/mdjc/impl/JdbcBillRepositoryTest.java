@@ -1,4 +1,4 @@
-package com.github.mdjc.domain;
+package com.github.mdjc.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -9,21 +9,40 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.github.mdjc.config.BeansConfig;
+import com.github.mdjc.domain.Apartment;
+import com.github.mdjc.domain.Bill;
+import com.github.mdjc.domain.BillRepository;
+import com.github.mdjc.domain.BilltStats;
+import com.github.mdjc.domain.CondoBill;
+import com.github.mdjc.domain.PaginationCriteria;
+import com.github.mdjc.domain.PaymentMethod;
+import com.github.mdjc.domain.PaymentStatus;
+import com.github.mdjc.domain.ProofOfPaymentExtension;
+import com.github.mdjc.domain.Role;
+import com.github.mdjc.domain.User;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
 @Import(BeansConfig.class)
-public class BillRepositoryTest {
+public class JdbcBillRepositoryTest {
 	@Autowired
-	BillRepository repository;
+	private NamedParameterJdbcTemplate template;
+	private BillRepository repository;
+	
+	@Before
+	public void init() {
+		repository = new JdbcBillRepository(template);
+	}
 
 	@Test
 	public void testGetBy_givenValidId_shouldReturnBill() {

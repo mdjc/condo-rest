@@ -38,7 +38,7 @@ public class BeansConfig {
 	}
 	
 	@Bean
-	public OutlayRepository outlayRepository(JdbcTemplate template){
+	public OutlayRepository outlayRepository(NamedParameterJdbcTemplate template){
 		return new JdbcOutlayRepository(template);
 	}
 	

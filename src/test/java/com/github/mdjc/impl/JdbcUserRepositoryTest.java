@@ -1,22 +1,33 @@
-package com.github.mdjc.domain;
+package com.github.mdjc.impl;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.github.mdjc.config.BeansConfig;
+import com.github.mdjc.domain.Role;
+import com.github.mdjc.domain.User;
+import com.github.mdjc.domain.UserRepository;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
 @Import(BeansConfig.class)
-public class UserRepositoryTest {
+public class JdbcUserRepositoryTest {
 	@Autowired
-	UserRepository repository;
+	private JdbcTemplate template;
+	private UserRepository repository;
+	
+	@Before
+	public void init() {
+		repository = new JdbcUserRepository(template);
+	}
 	
 	@Test
 	public void testGetAllByUsername_givenValidUser_shouldReturnUser() {
