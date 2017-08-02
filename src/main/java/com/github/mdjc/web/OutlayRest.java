@@ -11,9 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.github.mdjc.commons.files.Files;
 import com.github.mdjc.domain.ListMeta;
 import com.github.mdjc.domain.Outlay;
 import com.github.mdjc.domain.OutlayHelper;
@@ -41,12 +45,19 @@ public class OutlayRest {
 		return ImmutableMap.of("outlays", repository.findBy(condoId, from, to, pagCriteria));
 	}
 
+	@PostMapping(path = "/condos/{condoId}/outlays", consumes = { "multipart/form-data" })
+	public void addOutlay(@PathVariable long condoId, @RequestPart String category, @RequestPart String amount,
+			@RequestPart(required = false) String supplier, @RequestPart(required = false) String comment,
+			@RequestPart MultipartFile receiptImg) throws Exception {
+		String receiptImgExtension = Files.getExtension(receiptImg.getOriginalFilename()).toUpperCase();
+		helper.addOutlay(condoId, category, Double.valueOf(amount), supplier, comment, receiptImgExtension, receiptImg.getBytes());
+	}
+
 	@GetMapping(path = "/condos/{condoId}/outlays/meta")
 	public Map<String, ListMeta> condoOutlaysMeta(@PathVariable long condoId,
 			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 		return ImmutableMap.of("meta", new ListMeta(repository.countFindBy(condoId, from, to)));
-
 	}
 
 	@GetMapping(path = "outlays/{outlayId}")

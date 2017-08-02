@@ -8,10 +8,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.github.mdjc.commons.db.DBUtils;
 import com.github.mdjc.domain.ImageExtension;
@@ -80,10 +83,30 @@ public class JdbcOutlayRepository implements OutlayRepository {
 				parameters, Integer.class);
 	}
 
+	@Override
+	public long add(long condoId, Outlay outlay) {
+		SqlParameterSource parameters = DBUtils.parametersMap("condo_id", condoId, "amount", outlay.getAmount(),
+				"category", outlay.getCategory().toString(), "comment", outlay.getComment(), "supplier",
+				outlay.getSupplier(), "receipt_image_extension", outlay.getReceiptImageExtension().toString(),
+				"created_on", outlay.getCreatedOn());
+
+		try {
+			KeyHolder keyHolder = new GeneratedKeyHolder();
+			template.update(
+					"insert into outlays (condo, amount, category, comment, supplier, receipt_image_extension, created_on)"
+							+ " values (:condo_id, :amount, :category, :comment, :supplier, :receipt_image_extension, :created_on)",
+					parameters, keyHolder);
+			return keyHolder.getKey().longValue();
+		} catch (DataIntegrityViolationException e) {
+			throw new IllegalArgumentException("invalid outlay", e);
+		}
+	}
+
 	private Outlay mapper(ResultSet rs, int rownum) throws SQLException {
 		return new Outlay(rs.getLong("id"), OutlayCategory.valueOf(rs.getString("category")), rs.getDouble("amount"),
-				rs.getDate("created_on").toLocalDate(), rs.getString("supplier"), rs.getString("comment"),
-				ImageExtension.valueOf(rs.getString("receipt_image_extension")));
+				rs.getString("supplier"), rs.getString("comment"),
+				ImageExtension.valueOf(rs.getString("receipt_image_extension")),
+				rs.getDate("created_on").toLocalDate());
 	}
 
 	private OutlayStats statsMapper(ResultSet rs, int rownum) throws SQLException {

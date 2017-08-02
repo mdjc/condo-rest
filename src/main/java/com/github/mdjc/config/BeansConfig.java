@@ -53,7 +53,7 @@ public class BeansConfig {
 	}
 	
 	@Bean
-	public OutlayHelper outlayHelper() {
-		return new DefaultOutlayHelper(outlaysReceiptImagesDir);
+	public OutlayHelper outlayHelper(OutlayRepository repository) {
+		return new DefaultOutlayHelper(outlaysReceiptImagesDir, repository);
 	}
 }

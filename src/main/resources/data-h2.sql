@@ -59,7 +59,7 @@ values((select id from apartments where name='1D'), 'consumo de gas',  200, '201
 insert into bills (apartment, description, due_amount, due_date, payment_status, last_update_on, payment_method, proof_of_payment_extension)
 values((select id from apartments where name='1A'), 'iluminación del pasillo',  350, '2017-7-10',  'PAID_AWAITING_CONFIRMATION', '2017-7-10', 'CHECK', 'PNG');
 
-insert into outlays (amount, category, condo, created_on, supplier, comment, receipt_image_extension) values (15, 'SECURITY', 1, '2017-6-16', 'Watchman Dominicana', '', 'JPG');
-insert into outlays (amount, category, condo, created_on, supplier, comment, receipt_image_extension) values (10, 'REPARATION', 1, '2017-7-16', 'Edenorte', 'Reparación Lámpara Pasillo', 'JPG');
-insert into outlays (amount, category, condo, created_on, supplier, comment, receipt_image_extension) values (10, 'REPARATION', 2, '2017-6-16', 'Edenorte', 'Reparación Lámpara Principal', 'PNG');
-insert into outlays (amount, category, condo, created_on, supplier, comment, receipt_image_extension) values (55.36, 'SECURITY', 2, '2017-8-16', 'Watchman & Asocs', '', 'JPG');
+insert into outlays (condo, category, amount, supplier, comment, receipt_image_extension, created_on) values ( 1, 'SECURITY', 15, 'Watchman Dominicana', '', 'JPG', '2017-6-16',);
+insert into outlays (condo, category, amount, supplier, comment, receipt_image_extension, created_on) values ( 1, 'REPARATION', 10, 'Edenorte', 'Reparación Lámpara Pasillo', 'JPG', '2017-7-16');
+insert into outlays (condo, category, amount, supplier, comment, receipt_image_extension, created_on) values (2, 'REPARATION', 10, 'Edenorte', 'Reparación Lámpara Principal', 'PNG', '2017-6-16');
+insert into outlays (condo, category, amount, supplier, comment, receipt_image_extension, created_on) values (2, 'SECURITY', 55.36, 'Watchman & Asocs', '', 'JPG', '2017-8-16');

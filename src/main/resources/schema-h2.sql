@@ -41,12 +41,12 @@ create table bills (
 
 create table outlays (
 	id int not null auto_increment primary key,
-	amount double not null,
-	category varchar(30),
-	created_on date not null,
 	condo int not null,
+	category varchar(30),
+	amount double not null,
 	supplier varchar(40) default '',
 	comment varchar(200) default '',
 	receipt_image_extension varchar(3) not null,	
+	created_on date not null,
 	foreign key(condo) references condos(id)
 );
