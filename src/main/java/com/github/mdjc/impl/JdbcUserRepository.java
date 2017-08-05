@@ -4,22 +4,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.github.mdjc.commons.db.DBUtils;
 import com.github.mdjc.domain.Role;
 import com.github.mdjc.domain.User;
 import com.github.mdjc.domain.UserRepository;
 
 public class JdbcUserRepository implements UserRepository {
-	private final JdbcTemplate template;
+	private final NamedParameterJdbcTemplate template;
 
-	public JdbcUserRepository(JdbcTemplate template) {
+	public JdbcUserRepository(NamedParameterJdbcTemplate template) {
 		this.template = template;
 	}
 
 	public User getByUsername(String username) {
 		try {
-			return template.queryForObject("select * from users where username = ?", this::mapper, username);
+			return template.queryForObject("select * from users where username = :username",
+					DBUtils.parametersMap("username", username), this::mapper);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}

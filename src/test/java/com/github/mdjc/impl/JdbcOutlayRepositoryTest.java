@@ -129,7 +129,26 @@ public class JdbcOutlayRepositoryTest {
 		Outlay actual = repository.getBy(expected.getId());
 		assertOutlayEquals(expected, actual);
 	}
+	
+	@Test
+	public void testDeleteGivenValidOutlayId_ShouldDelete() {
+		int outlayId = 1;
+		Outlay outlay = repository.getBy(outlayId);
+		assertTrue(outlay != null);
+		
+		repository.delete(outlayId);
+		try {
+			repository.getBy(outlayId);
+		} catch(NoSuchElementException e) {
+			assertTrue(true);
+		}
+	}
 
+	@Test(expected = NoSuchElementException.class)
+	public void testDeleteGivenInvalidOutlayId_shouldThrowException() {
+		repository.delete(69);
+	}
+	
 	private void assertOutlayListEquals(List<Outlay> expected, List<Outlay> actual) {
 		assertEquals(expected, actual);
 

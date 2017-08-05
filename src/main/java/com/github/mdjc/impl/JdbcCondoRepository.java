@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.github.mdjc.commons.db.DBUtils;
+import com.github.mdjc.domain.Apartment;
 import com.github.mdjc.domain.Condo;
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.CondoStats;
@@ -15,17 +17,19 @@ import com.github.mdjc.domain.Role;
 import com.github.mdjc.domain.User;
 
 public class JdbcCondoRepository implements CondoRepository {
-	private final JdbcTemplate template;
+	private final NamedParameterJdbcTemplate template;
 
-	public JdbcCondoRepository(JdbcTemplate template) {
+	public JdbcCondoRepository(NamedParameterJdbcTemplate template) {
 		this.template = template;
 	}
 
 	@Override
 	public Condo getBy(long id) {
 		try {
-			return template.queryForObject("select c.id as id, c.name as name, u.username as manager from condos c"
-					+ " join users u on u.id = c.manager where c.id=? ", this::mapper, id);
+			return template.queryForObject(
+					"select c.id as id, c.name as name, u.username as manager from condos c"
+							+ " join users u on u.id = c.manager where c.id= :id ",
+					DBUtils.parametersMap("id", id), this::mapper);
 
 		} catch (EmptyResultDataAccessException e) {
 			throw new NoSuchElementException("Unexistent Condo");
@@ -39,8 +43,8 @@ public class JdbcCondoRepository implements CondoRepository {
 					"select c.id as id, c.name as name, c.balance, u.username as manager, "
 							+ " (select count(*) from apartments where condo = c.id) as apartmentCount, "
 							+ " (select count(*) from apartments where condo = c.id and resident is null) as residentCount"
-							+ " from condos c join users u on u.id = c.manager " + " where c.id = ?",
-					this::statsMapper, condoId);
+							+ " from condos c join users u on u.id = c.manager " + " where c.id = :condo_id",
+					DBUtils.parametersMap("condo_id", condoId), this::statsMapper);
 		} catch (EmptyResultDataAccessException e) {
 			throw new NoSuchElementException("Unexistent Condo");
 		}
@@ -53,22 +57,40 @@ public class JdbcCondoRepository implements CondoRepository {
 		String orderby = " order by c.name asc";
 
 		if (user.getRole() == Role.MANAGER) {
-			return template.query(select + " where manager = (select id from users where username=?)" + orderby,
-					this::mapper, user.getUsername());
+			return template.query(
+					select + " where manager = (select id from users where username = :username)" + orderby,
+					DBUtils.parametersMap("username", user.getUsername()), this::mapper);
 		}
 
 		return template.query(
 				select + " join apartments a on c.id = a.condo"
-						+ " where a.resident = (select id from users where username=?)" + orderby,
-				this::mapper, user.getUsername());
+						+ " where a.resident = (select id from users where username = :username)" + orderby,
+				DBUtils.parametersMap("username", user.getUsername()), this::mapper);
+	}
+
+	@Override
+	public List<Apartment> getCondoApartments(long condoId) {
+		return template.query(
+				"select a.*, u.username as resident_name from apartments a"
+						+ " left join users u on u.id = a.resident where condo = :condo_id ",
+				DBUtils.parametersMap("condo_id", condoId), this::apartmentMapper);
 	}
 
 	@Override
 	public void refreshBalanceWithBill(long billId, int sign) {
 		template.update(
-				"update condos set balance = balance + (? * (select b.due_amount from bills b where b.id = ?))"
-						+ " where id = (select a.condo from bills b join apartments a on a.id = b.apartment where b.id = ?)",
-				sign, billId, billId);
+				"update condos set balance = balance + (:sign * (select b.due_amount from bills b where b.id = :bill_id))"
+						+ " where id = (select a.condo from bills b join apartments a on a.id = b.apartment where b.id = :bill_id)",
+				DBUtils.parametersMap("bill_id", billId, "sign", sign));
+	}
+
+	@Override
+	public void refreshBalanceWithOutlay(long outlayId, int sign) {
+		template.update(
+				"update condos set balance = balance + (:sign * (select o.amount from outlays o where o.id = :outlay_id))"
+						+ " where id = (select condo from outlays where id = :outlay_id)",
+				DBUtils.parametersMap("outlay_id", outlayId, "sign", sign));
+
 	}
 
 	private Condo mapper(ResultSet rs, int rowNum) throws SQLException {
@@ -78,4 +100,11 @@ public class JdbcCondoRepository implements CondoRepository {
 	private CondoStats statsMapper(ResultSet rs, int rowNum) throws SQLException {
 		return new CondoStats(rs.getInt("apartmentCount"), rs.getInt("residentCount"), rs.getDouble("balance"));
 	}
+
+	private Apartment apartmentMapper(ResultSet rs, int rowNum) throws SQLException {
+		User resident = rs.getString("resident_name") == null ? null
+				: new User(rs.getString("resident_name"), Role.RESIDENT);
+		return new Apartment(rs.getString("name"), resident);
+	}
+
 }

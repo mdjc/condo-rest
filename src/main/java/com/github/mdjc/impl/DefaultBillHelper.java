@@ -83,6 +83,6 @@ public class DefaultBillHelper implements BillHelper {
 			condoRepository.refreshBalanceWithBill(billId, -1);			
 		}
 		
-		billRepository.deleteBill(billId);
+		billRepository.delete(billId);
 	}
 }

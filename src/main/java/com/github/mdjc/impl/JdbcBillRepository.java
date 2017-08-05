@@ -37,10 +37,9 @@ public class JdbcBillRepository implements BillRepository {
 
 	@Override
 	public Bill getBy(long billId) {
-		MapSqlParameterSource parameters = parametersMap("bill_id", billId);
-
 		try {
-			return template.queryForObject("select * from bills where id = :bill_id", parameters, this::mapper);
+			return template.queryForObject("select * from bills where id = :bill_id", parametersMap("bill_id", billId),
+					this::mapper);
 		} catch (EmptyResultDataAccessException e) {
 			throw new NoSuchElementException("Unexistent Bill");
 		}
@@ -48,12 +47,10 @@ public class JdbcBillRepository implements BillRepository {
 
 	@Override
 	public CondoBill getCondoBilldBy(long billId) {
-		MapSqlParameterSource parameters = parametersMap("bill_id", billId);
-
 		try {
 			return template.queryForObject("select b.*, a.name as apartment_name, u.username from apartments a"
 					+ " join bills b on b.apartment = a.id" + " join users u on u.id = a.resident"
-					+ " where b.id = :bill_id ", parameters, this::condoBillMapper);
+					+ " where b.id = :bill_id ", parametersMap("bill_id", billId), this::condoBillMapper);
 		} catch (EmptyResultDataAccessException e) {
 			throw new NoSuchElementException("Unexistent Bill");
 		}
@@ -93,7 +90,6 @@ public class JdbcBillRepository implements BillRepository {
 		sqlBuilder.append(
 				String.format(" order by b.last_update_on %s, payment_status asc", pagCriteria.getSortingOrder()));
 		sqlBuilder.append(" limit :offset,:limit");
-
 		return template.query(sqlBuilder.toString(), parameters, this::condoBillMapper);
 	}
 
@@ -107,7 +103,6 @@ public class JdbcBillRepository implements BillRepository {
 		addToFilter(to, parameters, sqlBuilder);
 		sqlBuilder.append(" join users u on u.id = a.resident");
 		sqlBuilder.append(" where a.condo = :condo_id ");
-
 		return template.queryForObject(sqlBuilder.toString(), parameters, Integer.class);
 	}
 
@@ -115,7 +110,6 @@ public class JdbcBillRepository implements BillRepository {
 	public List<Bill> findBy(long condoId, String username, List<PaymentStatus> paymentStatusList) {
 		MapSqlParameterSource parameters = parametersMap("username", username, "condo_id", condoId,
 				"payment_status_list", statusStrList(paymentStatusList));
-
 		return template.query("select b.* from apartments a"
 				+ " join bills b on b.apartment = a.id and b.payment_status in (:payment_status_list)"
 				+ " where a.condo = :condo_id " + " and resident = (select id from users where username=:username)"
@@ -123,7 +117,7 @@ public class JdbcBillRepository implements BillRepository {
 	}
 
 	@Override
-	public void addBill(long condoId, CondoBill bill) {
+	public void add(long condoId, CondoBill bill) {
 		SqlParameterSource parameters = parametersMap("condo_id", condoId, "apartment_name",
 				bill.getApartment().getName(), "due_date", Date.valueOf(bill.getDueDate()), "due_amount",
 				bill.getDueAmount(), "description", bill.getDescription(), "last_update_on",
@@ -133,17 +127,17 @@ public class JdbcBillRepository implements BillRepository {
 			template.update(
 					"insert into bills (apartment, due_date, due_amount, description, payment_status, last_update_on)"
 							+ " values((select id from apartments where name = :apartment_name and condo = :condo_id),"
-							+ " :due_date, :due_amount, :description, :payment_status, :last_update_on)", parameters);
+							+ " :due_date, :due_amount, :description, :payment_status, :last_update_on)",
+					parameters);
 		} catch (DataIntegrityViolationException e) {
 			throw new IllegalArgumentException("invalid bill", e);
 		}
 	}
-	
+
 	@Override
-	public void deleteBill(long billId) {
-		SqlParameterSource parameters = parametersMap("bill_id", billId);
-		int affectedRows = template.update("delete from bills where id = :bill_id", parameters);
-		
+	public void delete(long billId) {
+		int affectedRows = template.update("delete from bills where id = :bill_id", parametersMap("bill_id", billId));
+
 		if (affectedRows == 0) {
 			throw new NoSuchElementException("Unexistent Bill");
 		}
@@ -155,7 +149,7 @@ public class JdbcBillRepository implements BillRepository {
 		MapSqlParameterSource parameters = parametersMap("bill_id", billId, "payment_status", paymentStatus.toString(),
 				"payment_method", paymentMethod.toString(), "last_update_on", Date.valueOf(LocalDate.now()),
 				"proof_of_payment_extension", prooOfPaymentExt.toString());
-
+		
 		template.update("update bills set payment_status = :payment_status, payment_method = :payment_method, "
 				+ " last_update_on = :last_update_on, proof_of_payment_extension = :proof_of_payment_extension"
 				+ " where id = :bill_id  ", parameters);
@@ -165,7 +159,7 @@ public class JdbcBillRepository implements BillRepository {
 	public void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod) {
 		MapSqlParameterSource parameters = parametersMap("bill_id", billId, "payment_status", paymentStatus.toString(),
 				"payment_method", paymentMethod.toString(), "last_update_on", Date.valueOf(LocalDate.now()));
-
+		
 		template.update("update bills set payment_status = :payment_status, payment_method = :payment_method, "
 				+ " last_update_on = :last_update_on where id = :bill_id  ", parameters);
 	}

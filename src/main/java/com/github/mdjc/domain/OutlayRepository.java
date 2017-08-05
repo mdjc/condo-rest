@@ -11,4 +11,5 @@ public interface OutlayRepository {
 	int countFindBy(long condoId, LocalDate from, LocalDate to);
 	
 	long add(long condoId, Outlay outlay);
+	void delete(long outlayId);
 }

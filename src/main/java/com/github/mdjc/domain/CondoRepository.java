@@ -7,6 +7,8 @@ public interface CondoRepository {
 	CondoStats getStatsByCondoId(long id);
 	
 	List<Condo> getAllByUser(User user);
+	List<Apartment> getCondoApartments(long condoId);
 	
 	void refreshBalanceWithBill(long billId, int sign);
+	void refreshBalanceWithOutlay(long outlayId, int sign);
 }

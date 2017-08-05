@@ -5,4 +5,5 @@ public interface OutlayHelper {
 
 	void addOutlay(long condoId, String category, double amount, String supplier, String comment,
 			String receiptImgExtension, byte[] bytes) throws Exception;
+	void deleteOutlay(long outlayId);
 }

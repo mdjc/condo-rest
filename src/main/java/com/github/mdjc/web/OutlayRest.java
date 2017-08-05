@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,6 +64,11 @@ public class OutlayRest {
 	@GetMapping(path = "outlays/{outlayId}")
 	public Map<String, Outlay> outlay(@PathVariable long outlayId) {
 		return ImmutableMap.of("outlay", repository.getBy(outlayId));
+	}
+	
+	@DeleteMapping(path = "outlays/{outlayId}")
+	public void deleteCondoBill(@PathVariable long outlayId) {
+		helper.deleteOutlay(outlayId);
 	}
 
 	@GetMapping(path = "outlays/{outlayId}/receipt-img")

@@ -71,7 +71,7 @@ public class BillRest {
 	
 	@PostMapping(path = "/condos/{condoId}/condoBills")
 	public void addCondoBill(@PathVariable long condoId, @RequestBody CondoBill bill) {
-		billRepo.addBill(condoId, bill);
+		billRepo.add(condoId, bill);
 	}	
 	
 	@GetMapping(path = "/condos/{condoId}/condoBills/{billId}")

@@ -13,10 +13,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.github.mdjc.config.BeansConfig;
+import com.github.mdjc.domain.Apartment;
 import com.github.mdjc.domain.Condo;
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.CondoStats;
@@ -28,7 +29,7 @@ import com.github.mdjc.domain.User;
 @Import(BeansConfig.class)
 public class JdbcCondoRepositoryTest {
 	@Autowired
-	private JdbcTemplate template;
+	private NamedParameterJdbcTemplate template;
 	private CondoRepository repository;
 	
 	@Before
@@ -103,6 +104,21 @@ public class JdbcCondoRepositoryTest {
 		assertTrue(repository.getAllByUser(user).isEmpty());
 	}	
 	
+	@Test
+	public void testGetCondoApartmentsGivenValidCondo_shouldReturnist() {
+		List<Apartment> expected = Arrays.asList(new Apartment("1A"), new Apartment("1B"), new Apartment("1C"), new Apartment("1D"));
+		List<Apartment> actual = repository.getCondoApartments(1);
+		
+		for (int i = 0; i < expected.size(); i++) {
+			assertEquals(expected.get(i).getName(), actual.get(i).getName());
+		}
+	}
+	
+	@Test
+	public void testGetCondoApartmentsGivenValidCondo_shouldReturnEmpyList() {
+		assertTrue(repository.getCondoApartments(69).isEmpty());
+	}
+	
 	@Test(expected=NoSuchElementException.class)
 	public void testGetStatsByCondoId_givenInvalidId_shouldThrowException() {
 		repository.getStatsByCondoId(69);		
@@ -110,10 +126,12 @@ public class JdbcCondoRepositoryTest {
 	
 	@Test
 	public void testFefreshBalanceWithBill_givenValidBillAndPositiveSign_shouldPerformRefresh() {
+		int billId = 3;
+		double billDueAmount = 20;
 		CondoStats stats = repository.getStatsByCondoId(1);
 		double currentBalance = stats.getBalance();
-		double expectedBalance = currentBalance + 20;
-		repository.refreshBalanceWithBill(3, 1);
+		double expectedBalance = currentBalance + billDueAmount;
+		repository.refreshBalanceWithBill(billId, 1);
 		CondoStats statsAfterRefresh = repository.getStatsByCondoId(1);
 		double actualBalance = statsAfterRefresh.getBalance();
 		assertTrue(expectedBalance - actualBalance == 0);
@@ -121,11 +139,39 @@ public class JdbcCondoRepositoryTest {
 	
 	@Test
 	public void testFefreshBalanceWithBill_givenValidBillAndNegativeSign_shouldPerformRefresh() {
+		int billId = 3;
+		double billDueAmount = 20;
 		CondoStats stats = repository.getStatsByCondoId(1);
 		double currentBalance = stats.getBalance();
-		double expectedBalance = currentBalance - 20;
-		repository.refreshBalanceWithBill(3, -1);
+		double expectedBalance = currentBalance - billDueAmount;
+		repository.refreshBalanceWithBill(billId, -1);
 		CondoStats statsAfterRefresh = repository.getStatsByCondoId(1);
+		double actualBalance = statsAfterRefresh.getBalance();
+		assertTrue(expectedBalance - actualBalance == 0);
+	}
+	
+	@Test
+	public void testFefreshBalanceWithOutlay_givenValidIdAndPositiveSign_shouldPerformRefresh() {
+		int condoId = 1, outlayId = 1;
+		double outlayAmount = 15;
+		CondoStats stats = repository.getStatsByCondoId(condoId);
+		double currentBalance = stats.getBalance();
+		double expectedBalance = currentBalance + outlayAmount;
+		repository.refreshBalanceWithOutlay(outlayId , 1);
+		CondoStats statsAfterRefresh = repository.getStatsByCondoId(condoId);
+		double actualBalance = statsAfterRefresh.getBalance();
+		assertTrue(expectedBalance - actualBalance == 0);
+	}
+	
+	@Test
+	public void testFefreshBalanceWithOutlay_givenValidIdAndNegativeSign_shouldPerformRefresh() {
+		int condoId = 1, outlayId = 1;
+		double outlayAmount = 15;
+		CondoStats stats = repository.getStatsByCondoId(condoId);
+		double currentBalance = stats.getBalance();
+		double expectedBalance = currentBalance - outlayAmount;
+		repository.refreshBalanceWithOutlay(outlayId , -1);
+		CondoStats statsAfterRefresh = repository.getStatsByCondoId(condoId);
 		double actualBalance = statsAfterRefresh.getBalance();
 		assertTrue(expectedBalance - actualBalance == 0);
 	}

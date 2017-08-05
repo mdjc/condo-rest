@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.mdjc.domain.Apartment;
 import com.github.mdjc.domain.Condo;
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.CondoStats;
@@ -33,5 +34,10 @@ public class CondosRest {
 	@GetMapping(path = "/condos/{condoId}/stats")
 	public Map<String, CondoStats> condoStats(@PathVariable long condoId) {
 		return ImmutableMap.of("stats", condoRepo.getStatsByCondoId(condoId));
+	}
+	
+	@GetMapping(path = "/condos/{condoId}/apartments")
+	public Map<String, List<Apartment>> condoApartments(@PathVariable long condoId) {
+		return ImmutableMap.of("apartments", condoRepo.getCondoApartments(condoId));
 	}
 }

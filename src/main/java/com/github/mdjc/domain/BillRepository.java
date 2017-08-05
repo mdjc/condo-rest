@@ -13,8 +13,8 @@ public interface BillRepository {
 	int countFindBy(long condoId, List<PaymentStatus> paymentStatusList, LocalDate from, LocalDate to);
 	List<Bill> findBy(long condoId, String username, List<PaymentStatus> paymentStatusList);
 	
-	void addBill(long condoId, CondoBill bill);
-	void deleteBill(long billId);
+	void add(long condoId, CondoBill bill);
+	void delete(long billId);
 	
 	void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod,
 			ImageExtension prooOfPaymentExt);

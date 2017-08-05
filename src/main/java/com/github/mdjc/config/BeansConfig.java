@@ -3,7 +3,6 @@ package com.github.mdjc.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import com.github.mdjc.domain.BillHelper;
@@ -28,12 +27,12 @@ public class BeansConfig {
 	String outlaysReceiptImagesDir;
 	
 	@Bean
-	public UserRepository userRepository(JdbcTemplate template){
+	public UserRepository userRepository(NamedParameterJdbcTemplate template){
 		return new JdbcUserRepository(template);
 	}
 	
 	@Bean
-	public CondoRepository condoRepository(JdbcTemplate template) {
+	public CondoRepository condoRepository(NamedParameterJdbcTemplate template) {
 		return new JdbcCondoRepository(template);
 	}
 	
@@ -53,7 +52,7 @@ public class BeansConfig {
 	}
 	
 	@Bean
-	public OutlayHelper outlayHelper(OutlayRepository repository) {
-		return new DefaultOutlayHelper(outlaysReceiptImagesDir, repository);
+	public OutlayHelper outlayHelper(OutlayRepository outlayRepository, CondoRepository condoRepository) {
+		return new DefaultOutlayHelper(outlaysReceiptImagesDir, outlayRepository, condoRepository);
 	}
 }

@@ -221,7 +221,7 @@ public class JdbcBillRepositoryTest {
 	public void testAddBill_givenValidApartmentDueDateAmountAndDescription_shouldAddBill() {
 		CondoBill bill = new CondoBill("something", LocalDate.now(), 100, PaymentStatus.PENDING, LocalDate.now(),
 				new Apartment("1D"));
-		repository.addBill(1, bill);
+		repository.add(1, bill);
 		CondoBill expected = new CondoBill(14, "something", LocalDate.now(), 100, PaymentStatus.PENDING,
 				LocalDate.now(), new Apartment("1D"));
 		assertCondoBillEquals(expected, repository.getCondoBilldBy(14));
@@ -232,7 +232,7 @@ public class JdbcBillRepositoryTest {
 		long billId = 5;
 		Bill bill = repository.getBy(billId);
 		assertTrue(bill != null);
-		repository.deleteBill(billId);
+		repository.delete(billId);
 		
 		try {
 			repository.getBy(billId);
@@ -244,7 +244,7 @@ public class JdbcBillRepositoryTest {
 	
 	@Test(expected=NoSuchElementException.class)
 	public void testDeleteBill_givenInvalidId_shouldThrowException() {
-		repository.deleteBill(69);
+		repository.delete(69);
 	}
 
 	@Test

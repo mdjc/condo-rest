@@ -10,7 +10,6 @@ import java.util.NoSuchElementException;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -33,10 +32,9 @@ public class JdbcOutlayRepository implements OutlayRepository {
 
 	@Override
 	public Outlay getBy(long outlayId) {
-		MapSqlParameterSource parameters = parametersMap("outlay_id", outlayId);
-
 		try {
-			return template.queryForObject("select * from outlays where id = :outlay_id", parameters, this::mapper);
+			return template.queryForObject("select * from outlays where id = :outlay_id",
+					parametersMap("outlay_id", outlayId), this::mapper);
 		} catch (EmptyResultDataAccessException e) {
 			throw new NoSuchElementException("Unexistent Outlay");
 		}
@@ -100,6 +98,17 @@ public class JdbcOutlayRepository implements OutlayRepository {
 		} catch (DataIntegrityViolationException e) {
 			throw new IllegalArgumentException("invalid outlay", e);
 		}
+	}
+
+	@Override
+	public void delete(long outlayId) {
+		int affectedRows = template.update("delete from outlays where id = :outlay_id",
+				parametersMap("outlay_id", outlayId));
+
+		if (affectedRows == 0) {
+			throw new NoSuchElementException("Unexistent Outlay");
+		}
+
 	}
 
 	private Outlay mapper(ResultSet rs, int rownum) throws SQLException {
