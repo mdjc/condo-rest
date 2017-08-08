@@ -33,7 +33,7 @@ public class OutlayRest {
 	@Autowired
 	OutlayHelper helper;
 
-	@GetMapping(path = "/condos/{condoId}/outlays")
+	@GetMapping(path = "condos/{condoId}/outlays")
 	public List<Outlay> condoOutlays(@PathVariable long condoId,
 			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
@@ -44,7 +44,7 @@ public class OutlayRest {
 		return repository.findBy(condoId, from, to, pagCriteria);
 	}
 
-	@PostMapping(path = "/condos/{condoId}/outlays", consumes = { "multipart/form-data" })
+	@PostMapping(path = "condos/{condoId}/outlays", consumes = { "multipart/form-data" })
 	public void addOutlay(@PathVariable long condoId, @RequestPart String category, @RequestPart String amount,
 			@RequestPart(required = false) String supplier, @RequestPart(required = false) String comment,
 			@RequestPart MultipartFile receiptImg) throws Exception {
@@ -52,11 +52,18 @@ public class OutlayRest {
 		helper.addOutlay(condoId, category, Double.valueOf(amount), supplier, comment, receiptImgExtension, receiptImg.getBytes());
 	}
 
-	@GetMapping(path = "/condos/{condoId}/outlays/meta")
+	@GetMapping(path = "condos/{condoId}/outlays/meta")
 	public ListMeta condoOutlaysMeta(@PathVariable long condoId,
 			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 		return new ListMeta(repository.countFindBy(condoId, from, to));
+	}
+	
+	@GetMapping(path = "condos/{condoId}/outlays/stats")
+	public OutlayStats condoOutlayStats(@PathVariable long condoId,
+			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+		return repository.getStatsBy(condoId, from, to);
 	}
 
 	@GetMapping(path = "outlays/{outlayId}")
@@ -77,12 +84,5 @@ public class OutlayRest {
 		headers.setContentType(RestUtils.getContentType(outlay.getReceiptImageExtension()));
 		headers.setContentLength(bytes.length);
 		return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
-	}
-
-	@GetMapping(path = "/condos/{condoId}/outlays/stats")
-	public OutlayStats condoOutlayStats(@PathVariable long condoId,
-			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-		return repository.getStatsBy(condoId, from, to);
 	}
 }

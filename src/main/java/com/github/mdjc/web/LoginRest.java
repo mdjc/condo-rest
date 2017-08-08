@@ -8,7 +8,7 @@ import com.github.mdjc.domain.User;
 
 @RestController
 public class LoginRest {
-	@PostMapping("/login")
+	@PostMapping("login")
 	User login(Authentication auth) {
 		return (User) auth.getPrincipal();
 	}

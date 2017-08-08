@@ -40,7 +40,7 @@ public class BillRest {
 	@Autowired
 	BillHelper helper;
 	
-	@GetMapping(path = "/condos/{condoId}/condoBills")
+	@GetMapping(path = "condos/{condoId}/condoBills")
 	public List<CondoBill> condoBills(@PathVariable long condoId,
 			@RequestParam(required = false) String[] paymentStatus,
 			@RequestParam(required = false) 
@@ -56,7 +56,12 @@ public class BillRest {
 		return billRepo.findBy(condoId, statusList, from, to, pagCriteria);
 	}
 	
-	@GetMapping(path = "/condos/{condoId}/condoBills/meta")
+	@PostMapping(path = "condos/{condoId}/condoBills")
+	public void addCondoBill(@PathVariable long condoId, @RequestBody CondoBill bill) {
+		billRepo.add(condoId, bill);
+	}
+	
+	@GetMapping(path = "condos/{condoId}/condoBills/meta")
 	public ListMeta condoBillsMeta(@PathVariable long condoId,
 			@RequestParam(required = false) String[] paymentStatus,
 			@RequestParam(required = false) 
@@ -65,43 +70,26 @@ public class BillRest {
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 		List<PaymentStatus> statusList = helper.getAsEnumList(paymentStatus);
 		return new ListMeta(billRepo.countFindBy(condoId, statusList, from, to));
-	}
-	
-	@PostMapping(path = "/condos/{condoId}/condoBills")
-	public void addCondoBill(@PathVariable long condoId, @RequestBody CondoBill bill) {
-		billRepo.add(condoId, bill);
 	}	
-	
-	@GetMapping(path = "/condos/{condoId}/condoBills/{billId}")
-	public CondoBill getCondoBill(@PathVariable long billId) {
-		return billRepo.getCondoBilldBy(billId);
-	}
 
-	@GetMapping(path = "/condos/{condoId}/bills/stats")
+	@GetMapping(path = "condos/{condoId}/condoBills/stats")
 	public BilltStats condoBillStats(@PathVariable long condoId,
 			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 		return billRepo.getStatsBy(condoId, from, to);
 	}
-
-	@GetMapping(path = "condos/{condoId}/residents/{username}/bills")
-	public List<Bill> getApartmentBills(@PathVariable long condoId, @PathVariable String username,
-			@RequestParam String[] paymentStatus) {
-		List<PaymentStatus> statusList = helper.getAsEnumList(paymentStatus);
-		return billRepo.findBy(condoId, username, statusList);
+	
+	@GetMapping(path = "condoBills/{billId}")
+	public CondoBill getCondoBill(@PathVariable long billId) {
+		return billRepo.getCondoBilldBy(billId);
 	}
 
-	@GetMapping(path = "condos/{condoId}/residents/{username}/bills/{billId}")
-	public Bill getBill(@PathVariable long billId) {
-		return billRepo.getBy(billId);
-	}
-
-	@DeleteMapping(path = "bills/{billId}")
+	@DeleteMapping(path = "condoBills/{billId}")
 	public void deleteCondoBill(@PathVariable long billId) {
 		helper.deleteBill(billId);
 	}
 	
-	@PutMapping(path = "bills/{billId}/payment", consumes = { "multipart/form-data" })
+	@PutMapping(path = "condoBills/{billId}/payment", consumes = { "multipart/form-data" })
 	public void putPaymentInfo(@PathVariable long billId, @RequestPart String paymentMethod,
 			@RequestPart(required = false) MultipartFile proofOfPaymentPict) throws Exception {
 		if (proofOfPaymentPict == null) {
@@ -113,12 +101,12 @@ public class BillRest {
 		}
 	}
 	
-	@PatchMapping(path = "bills/{billId}/payment")
-	public void updatePaymentInfo(@PathVariable long billId, @RequestBody String paymentStatus) throws Exception {
+	@PatchMapping(path = "condoBills/{billId}/payment")
+	public void patchPaymentInfo(@PathVariable long billId, @RequestBody String paymentStatus) throws Exception {
 		helper.transitionBillPaymentStatusTo(billId, PaymentStatus.valueOf(paymentStatus));
 	}
 
-	@GetMapping(path = "bills/{billId}/payment-img")
+	@GetMapping(path = "condoBills/{billId}/payment-img")
 	public ResponseEntity<byte[]> getPhoto(@PathVariable long billId) throws Exception {
 		Bill bill = billRepo.getBy(billId);
 		HttpHeaders headers = new HttpHeaders();
@@ -131,5 +119,12 @@ public class BillRest {
 		headers.setContentType(RestUtils.getContentType(bill.getProofOfPaymentExtension()));
 		headers.setContentLength(bytes.length);
 		return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+	}
+	
+	@GetMapping(path = "condos/{condoId}/residents/{username}/bills")
+	public List<Bill> getApartmentBills(@PathVariable long condoId, @PathVariable String username,
+			@RequestParam String[] paymentStatus) {
+		List<PaymentStatus> statusList = helper.getAsEnumList(paymentStatus);
+		return billRepo.findBy(condoId, username, statusList);
 	}
 }
