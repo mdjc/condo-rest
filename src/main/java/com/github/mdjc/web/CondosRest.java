@@ -1,7 +1,6 @@
 package com.github.mdjc.web;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -14,7 +13,6 @@ import com.github.mdjc.domain.Condo;
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.CondoStats;
 import com.github.mdjc.domain.User;
-import com.google.common.collect.ImmutableMap;
 
 @RestController
 public class CondosRest {
@@ -22,22 +20,22 @@ public class CondosRest {
 	CondoRepository condoRepo;
 
 	@GetMapping(path = "/condos")
-	public Map<String, List<Condo>> userCondos(Authentication auth) {
-		return ImmutableMap.of("condos", condoRepo.getAllByUser((User) auth.getPrincipal()));
+	public List<Condo> userCondos(Authentication auth) {
+		return condoRepo.getAllByUser((User) auth.getPrincipal());
 	}
 
 	@GetMapping(path = "/condos/{condoId}")
-	public Map<String, Condo> getCondo(@PathVariable long condoId) {
-		return ImmutableMap.of("condo", condoRepo.getBy(condoId));
+	public Condo getCondo(@PathVariable long condoId) {
+		return condoRepo.getBy(condoId);
 	}
 
 	@GetMapping(path = "/condos/{condoId}/stats")
-	public Map<String, CondoStats> condoStats(@PathVariable long condoId) {
-		return ImmutableMap.of("stats", condoRepo.getStatsByCondoId(condoId));
+	public CondoStats condoStats(@PathVariable long condoId) {
+		return condoRepo.getStatsByCondoId(condoId);
 	}
 	
 	@GetMapping(path = "/condos/{condoId}/apartments")
-	public Map<String, List<Apartment>> condoApartments(@PathVariable long condoId) {
-		return ImmutableMap.of("apartments", condoRepo.getCondoApartments(condoId));
+	public List<Apartment> condoApartments(@PathVariable long condoId) {
+		return condoRepo.getCondoApartments(condoId);
 	}
 }

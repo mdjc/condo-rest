@@ -2,7 +2,6 @@ package com.github.mdjc.web;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,7 +24,6 @@ import com.github.mdjc.domain.OutlayHelper;
 import com.github.mdjc.domain.OutlayRepository;
 import com.github.mdjc.domain.OutlayStats;
 import com.github.mdjc.domain.PaginationCriteria;
-import com.google.common.collect.ImmutableMap;
 
 @RestController
 public class OutlayRest {
@@ -36,14 +34,14 @@ public class OutlayRest {
 	OutlayHelper helper;
 
 	@GetMapping(path = "/condos/{condoId}/outlays")
-	public Map<String, List<Outlay>> condoOutlays(@PathVariable long condoId,
+	public List<Outlay> condoOutlays(@PathVariable long condoId,
 			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
 			@RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "0") int limit,
 			@RequestParam(defaultValue = "ASC") String order) {
 		PaginationCriteria pagCriteria = new PaginationCriteria(offset, limit,
 				PaginationCriteria.SortingOrder.valueOf(order.toUpperCase()));
-		return ImmutableMap.of("outlays", repository.findBy(condoId, from, to, pagCriteria));
+		return repository.findBy(condoId, from, to, pagCriteria);
 	}
 
 	@PostMapping(path = "/condos/{condoId}/outlays", consumes = { "multipart/form-data" })
@@ -55,15 +53,15 @@ public class OutlayRest {
 	}
 
 	@GetMapping(path = "/condos/{condoId}/outlays/meta")
-	public Map<String, ListMeta> condoOutlaysMeta(@PathVariable long condoId,
+	public ListMeta condoOutlaysMeta(@PathVariable long condoId,
 			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-		return ImmutableMap.of("meta", new ListMeta(repository.countFindBy(condoId, from, to)));
+		return new ListMeta(repository.countFindBy(condoId, from, to));
 	}
 
 	@GetMapping(path = "outlays/{outlayId}")
-	public Map<String, Outlay> outlay(@PathVariable long outlayId) {
-		return ImmutableMap.of("outlay", repository.getBy(outlayId));
+	public Outlay outlay(@PathVariable long outlayId) {
+		return repository.getBy(outlayId);
 	}
 	
 	@DeleteMapping(path = "outlays/{outlayId}")
@@ -82,9 +80,9 @@ public class OutlayRest {
 	}
 
 	@GetMapping(path = "/condos/{condoId}/outlays/stats")
-	public Map<String, OutlayStats> condoOutlayStats(@PathVariable long condoId,
+	public OutlayStats condoOutlayStats(@PathVariable long condoId,
 			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-		return ImmutableMap.of("stats", repository.getStatsBy(condoId, from, to));
+		return repository.getStatsBy(condoId, from, to);
 	}
 }

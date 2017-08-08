@@ -2,7 +2,6 @@ package com.github.mdjc.web;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,7 +31,6 @@ import com.github.mdjc.domain.ListMeta;
 import com.github.mdjc.domain.PaginationCriteria;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
-import com.google.common.collect.ImmutableMap;
 
 @RestController
 public class BillRest {
@@ -43,7 +41,7 @@ public class BillRest {
 	BillHelper helper;
 	
 	@GetMapping(path = "/condos/{condoId}/condoBills")
-	public Map<String, List<CondoBill>> condoBills(@PathVariable long condoId,
+	public List<CondoBill> condoBills(@PathVariable long condoId,
 			@RequestParam(required = false) String[] paymentStatus,
 			@RequestParam(required = false) 
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
@@ -55,18 +53,18 @@ public class BillRest {
 		List<PaymentStatus> statusList = helper.getAsEnumList(paymentStatus);
 		PaginationCriteria pagCriteria = new PaginationCriteria(offset, limit,
 				PaginationCriteria.SortingOrder.valueOf(order.toUpperCase()));
-		return ImmutableMap.of("condo-bills", billRepo.findBy(condoId, statusList, from, to, pagCriteria));
+		return billRepo.findBy(condoId, statusList, from, to, pagCriteria);
 	}
 	
 	@GetMapping(path = "/condos/{condoId}/condoBills/meta")
-	public Map<String, ListMeta> condoBillsMeta(@PathVariable long condoId,
+	public ListMeta condoBillsMeta(@PathVariable long condoId,
 			@RequestParam(required = false) String[] paymentStatus,
 			@RequestParam(required = false) 
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 			@RequestParam(required = false) 
 			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
 		List<PaymentStatus> statusList = helper.getAsEnumList(paymentStatus);
-		return ImmutableMap.of("meta", new ListMeta(billRepo.countFindBy(condoId, statusList, from, to)));
+		return new ListMeta(billRepo.countFindBy(condoId, statusList, from, to));
 	}
 	
 	@PostMapping(path = "/condos/{condoId}/condoBills")
@@ -75,27 +73,27 @@ public class BillRest {
 	}	
 	
 	@GetMapping(path = "/condos/{condoId}/condoBills/{billId}")
-	public Map<String, CondoBill> getCondoBill(@PathVariable long billId) {
-		return ImmutableMap.of("condo-bill", billRepo.getCondoBilldBy(billId));
+	public CondoBill getCondoBill(@PathVariable long billId) {
+		return billRepo.getCondoBilldBy(billId);
 	}
 
 	@GetMapping(path = "/condos/{condoId}/bills/stats")
-	public Map<String, BilltStats> condoBillStats(@PathVariable long condoId,
+	public BilltStats condoBillStats(@PathVariable long condoId,
 			@RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 			@RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-		return ImmutableMap.of("stats", billRepo.getStatsBy(condoId, from, to));
+		return billRepo.getStatsBy(condoId, from, to);
 	}
 
 	@GetMapping(path = "condos/{condoId}/residents/{username}/bills")
-	public Map<String, List<Bill>> getApartmentBills(@PathVariable long condoId, @PathVariable String username,
+	public List<Bill> getApartmentBills(@PathVariable long condoId, @PathVariable String username,
 			@RequestParam String[] paymentStatus) {
 		List<PaymentStatus> statusList = helper.getAsEnumList(paymentStatus);
-		return ImmutableMap.of("bills", billRepo.findBy(condoId, username, statusList));
+		return billRepo.findBy(condoId, username, statusList);
 	}
 
 	@GetMapping(path = "condos/{condoId}/residents/{username}/bills/{billId}")
-	public Map<String, Bill> getBill(@PathVariable long billId) {
-		return ImmutableMap.of("bill", billRepo.getBy(billId));
+	public Bill getBill(@PathVariable long billId) {
+		return billRepo.getBy(billId);
 	}
 
 	@DeleteMapping(path = "bills/{billId}")
