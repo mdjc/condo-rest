@@ -57,7 +57,8 @@ public class JdbcBillRepository implements BillRepository {
 	
 			return template.queryForObject(
 					"select b.* from bills b join apartments a on a.id = b.apartment"
-							+ " where b.id = :bill_id and a.resident = (select id from users where username = :username)",
+							+ " where b.id = :bill_id and a.condo = "
+							+ " (select c.id from condos c join apartments a on a.condo = c.id where a.resident = (select id from users where username = :username))",
 					parametersMap("bill_id", billId, "username", user.getUsername()), this::mapper);
 		} catch(EmptyResultDataAccessException e) {
 			throw new NoSuchElementException("Unexistent Bill for User");
