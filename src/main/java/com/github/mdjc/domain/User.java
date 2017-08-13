@@ -28,6 +28,14 @@ public class User {
 	public Role getRole() {
 		return role;
 	}
+	
+	public boolean isManager() {
+		return role.equals(Role.MANAGER);
+	}
+	
+	public boolean isResident() {
+		return role.equals(Role.RESIDENT);
+	}
 
 	@Override
 	public boolean equals(Object other) {

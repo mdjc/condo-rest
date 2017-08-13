@@ -19,22 +19,22 @@ public class CondosRest {
 	@Autowired
 	CondoRepository condoRepo;
 
-	@GetMapping(path = "condos")
+	@GetMapping(path = "/condos")
 	public List<Condo> userCondos(Authentication auth) {
 		return condoRepo.getAllByUser((User) auth.getPrincipal());
 	}
 
-	@GetMapping(path = "condos/{condoId}")
-	public Condo getCondo(@PathVariable long condoId) {
+	@GetMapping(path = "/condos/{condoId}")
+	public Condo condo(@PathVariable long condoId) {
 		return condoRepo.getBy(condoId);
 	}
 
-	@GetMapping(path = "condos/{condoId}/stats")
+	@GetMapping(path = "/condos/{condoId}/stats")
 	public CondoStats condoStats(@PathVariable long condoId) {
 		return condoRepo.getStatsByCondoId(condoId);
 	}
 	
-	@GetMapping(path = "condos/{condoId}/apartments")
+	@GetMapping(path = "/condos/{condoId}/apartments")
 	public List<Apartment> condoApartments(@PathVariable long condoId) {
 		return condoRepo.getCondoApartments(condoId);
 	}

@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -24,10 +25,10 @@ import com.github.mdjc.domain.Bill;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.BilltStats;
 import com.github.mdjc.domain.CondoBill;
+import com.github.mdjc.domain.ImageExtension;
 import com.github.mdjc.domain.PaginationCriteria;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
-import com.github.mdjc.domain.ImageExtension;
 import com.github.mdjc.domain.Role;
 import com.github.mdjc.domain.User;
 
@@ -35,12 +36,17 @@ import com.github.mdjc.domain.User;
 @JdbcTest
 @Import(BeansConfig.class)
 public class JdbcBillRepositoryTest {
+
+	@Value("${myproperty}")
+	String myp;
+
 	@Autowired
 	private NamedParameterJdbcTemplate template;
 	private BillRepository repository;
-	
+
 	@Before
 	public void init() {
+		System.out.println(myp);
 		repository = new JdbcBillRepository(template);
 	}
 
@@ -52,6 +58,32 @@ public class JdbcBillRepositoryTest {
 		assertEquals(expected, actual);
 	}
 
+	@Test
+	public void testGetBy_givenValidIdAndManager_shouldReturnBill() {
+		Bill expected = new Bill(3, "cuota mensual", LocalDate.of(2017, 6, 15), 20, PaymentStatus.PAID_CONFIRMED,
+				LocalDate.of(2017, 6, 15), PaymentMethod.CHECK, ImageExtension.JPG);
+		Bill actual = repository.getBy(3, new User("mirna", Role.MANAGER));
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testGetBy_givenValidIdAndResident_shouldReturnBill() {
+		Bill expected = new Bill(3, "cuota mensual", LocalDate.of(2017, 6, 15), 20, PaymentStatus.PAID_CONFIRMED,
+				LocalDate.of(2017, 6, 15), PaymentMethod.CHECK, ImageExtension.JPG);
+		Bill actual = repository.getBy(3, new User("aldo", Role.RESIDENT));
+		assertEquals(expected, actual);
+	}
+
+	@Test(expected = NoSuchElementException.class)
+	public void testGetBy_givenInvalidIdWithManager_shouldThrowException() {
+		repository.getBy(69, new User("mirna", Role.MANAGER));
+	}
+
+	@Test(expected = NoSuchElementException.class)
+	public void testGetBy_givenInvalidIdWithResident_shouldThrowException() {
+		repository.getBy(69, new User("aldo", Role.RESIDENT));
+	}
+
 	@Test(expected = NoSuchElementException.class)
 	public void testGetByGivenInvalidId_shouldThrowException() {
 		repository.getBy(69);
@@ -60,8 +92,8 @@ public class JdbcBillRepositoryTest {
 	@Test
 	public void testGetCondoBillBy_givenValidId_shouldReturnCondoBill() {
 		CondoBill expected = new CondoBill(3, "cuota mensual", LocalDate.of(2017, 6, 15), 20,
-				PaymentStatus.PAID_CONFIRMED, LocalDate.of(2017, 6, 15), PaymentMethod.CHECK,
-				ImageExtension.JPG, new Apartment("1D"));
+				PaymentStatus.PAID_CONFIRMED, LocalDate.of(2017, 6, 15), PaymentMethod.CHECK, ImageExtension.JPG,
+				new Apartment("1D"));
 		CondoBill actual = repository.getCondoBilldBy(3);
 		assertCondoBillEquals(expected, actual);
 	}
@@ -226,23 +258,22 @@ public class JdbcBillRepositoryTest {
 				LocalDate.now(), new Apartment("1D"));
 		assertCondoBillEquals(expected, repository.getCondoBilldBy(14));
 	}
-	
+
 	@Test
 	public void testDeleteBill_givenValidId_shouldDeleteBill() {
 		long billId = 5;
 		Bill bill = repository.getBy(billId);
 		assertTrue(bill != null);
 		repository.delete(billId);
-		
+
 		try {
 			repository.getBy(billId);
-		} catch(NoSuchElementException e) {
+		} catch (NoSuchElementException e) {
 			assertTrue(true);
 		}
 	}
-	
-	
-	@Test(expected=NoSuchElementException.class)
+
+	@Test(expected = NoSuchElementException.class)
 	public void testDeleteBill_givenInvalidId_shouldThrowException() {
 		repository.delete(69);
 	}
@@ -253,8 +284,7 @@ public class JdbcBillRepositoryTest {
 		repository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, PaymentMethod.TRANSFER,
 				ImageExtension.PNG);
 		Bill expected = new Bill(10, "cuota mensual", LocalDate.of(2017, 07, 01), 10,
-				PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.now(), PaymentMethod.TRANSFER,
-				ImageExtension.PNG);
+				PaymentStatus.PAID_AWAITING_CONFIRMATION, LocalDate.now(), PaymentMethod.TRANSFER, ImageExtension.PNG);
 		Bill actual = repository.getBy(billId);
 		assertEquals(expected, actual);
 	}

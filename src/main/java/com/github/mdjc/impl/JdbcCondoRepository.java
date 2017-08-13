@@ -17,6 +17,8 @@ import com.github.mdjc.domain.Role;
 import com.github.mdjc.domain.User;
 
 public class JdbcCondoRepository implements CondoRepository {
+	private static final String SELECT_CONDO_AND_MANAGER = "select c.id as id, c.name as name, u.username as manager from condos c"
+			+ " join users u on u.id = c.manager";
 	private final NamedParameterJdbcTemplate template;
 
 	public JdbcCondoRepository(NamedParameterJdbcTemplate template) {
@@ -26,13 +28,30 @@ public class JdbcCondoRepository implements CondoRepository {
 	@Override
 	public Condo getBy(long id) {
 		try {
-			return template.queryForObject(
-					"select c.id as id, c.name as name, u.username as manager from condos c"
-							+ " join users u on u.id = c.manager where c.id= :id ",
+			return template.queryForObject(SELECT_CONDO_AND_MANAGER + " where c.id= :id ",
 					DBUtils.parametersMap("id", id), this::mapper);
 
 		} catch (EmptyResultDataAccessException e) {
 			throw new NoSuchElementException("Unexistent Condo");
+		}
+	}
+
+	@Override
+	public Condo getBy(long id, User user) {
+		try {
+			if (user.isManager()) {
+				return template.queryForObject(
+						SELECT_CONDO_AND_MANAGER
+								+ " where c.id = :condoId and manager = (select id from users where username = :username)",
+						DBUtils.parametersMap("condoId", id, "username", user.getUsername()), this::mapper);
+			}
+
+			return template.queryForObject(
+					SELECT_CONDO_AND_MANAGER + " join apartments a on c.id = a.condo"
+							+ " where c.id = :condoId and a.resident = (select id from users where username = :username)",
+					DBUtils.parametersMap("condoId", id, "username", user.getUsername()), this::mapper);
+		} catch (EmptyResultDataAccessException e) {
+			throw new NoSuchElementException("Unexistent Condo for User");
 		}
 	}
 
@@ -52,18 +71,16 @@ public class JdbcCondoRepository implements CondoRepository {
 
 	@Override
 	public List<Condo> getAllByUser(User user) {
-		String select = "select c.id as id, c.name as name, u.username as manager from condos c"
-				+ " join users u on u.id = c.manager ";
 		String orderby = " order by c.name asc";
 
-		if (user.getRole() == Role.MANAGER) {
-			return template.query(
-					select + " where manager = (select id from users where username = :username)" + orderby,
+		if (user.isManager()) {
+			return template.query(SELECT_CONDO_AND_MANAGER
+					+ " where manager = (select id from users where username = :username)" + orderby,
 					DBUtils.parametersMap("username", user.getUsername()), this::mapper);
 		}
 
 		return template.query(
-				select + " join apartments a on c.id = a.condo"
+				SELECT_CONDO_AND_MANAGER + " join apartments a on c.id = a.condo"
 						+ " where a.resident = (select id from users where username = :username)" + orderby,
 				DBUtils.parametersMap("username", user.getUsername()), this::mapper);
 	}

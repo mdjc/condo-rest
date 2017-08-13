@@ -46,6 +46,25 @@ public class JdbcBillRepository implements BillRepository {
 	}
 
 	@Override
+	public Bill getBy(long billId, User user) {
+		try {
+			if (user.isManager()) {
+				return template.queryForObject(
+						"select b.* from bills b join apartments a on a.id = b.apartment join condos c on c.id = a.condo"
+								+ " where b.id = :bill_id and c.manager = (select id from users where username = :username)",
+						parametersMap("bill_id", billId, "username", user.getUsername()), this::mapper);
+			}
+	
+			return template.queryForObject(
+					"select b.* from bills b join apartments a on a.id = b.apartment"
+							+ " where b.id = :bill_id and a.resident = (select id from users where username = :username)",
+					parametersMap("bill_id", billId, "username", user.getUsername()), this::mapper);
+		} catch(EmptyResultDataAccessException e) {
+			throw new NoSuchElementException("Unexistent Bill for User");
+		}
+	}
+
+	@Override
 	public CondoBill getCondoBilldBy(long billId) {
 		try {
 			return template.queryForObject("select b.*, a.name as apartment_name, u.username from apartments a"
@@ -96,7 +115,7 @@ public class JdbcBillRepository implements BillRepository {
 	public int countFindBy(long condoId, List<PaymentStatus> paymentStatusList, LocalDate from, LocalDate to) {
 		MapSqlParameterSource parameters = parametersMap("condo_id", condoId);
 		StringBuilder sqlBuilder = new StringBuilder();
-		sqlBuilder.append("select count(b.*) from apartments a");
+		sqlBuilder.append("select count(*) from apartments a");
 		sqlBuilder.append(" join bills b on b.apartment = a.id");
 		addPaymentListFilter(paymentStatusList, parameters, sqlBuilder);
 		addFromFilter(from, parameters, sqlBuilder);
@@ -149,7 +168,7 @@ public class JdbcBillRepository implements BillRepository {
 		MapSqlParameterSource parameters = parametersMap("bill_id", billId, "payment_status", paymentStatus.toString(),
 				"payment_method", paymentMethod.toString(), "last_update_on", Date.valueOf(LocalDate.now()),
 				"proof_of_payment_extension", prooOfPaymentExt.toString());
-		
+
 		template.update("update bills set payment_status = :payment_status, payment_method = :payment_method, "
 				+ " last_update_on = :last_update_on, proof_of_payment_extension = :proof_of_payment_extension"
 				+ " where id = :bill_id  ", parameters);
@@ -159,7 +178,7 @@ public class JdbcBillRepository implements BillRepository {
 	public void updatePaymentInfo(long billId, PaymentStatus paymentStatus, PaymentMethod paymentMethod) {
 		MapSqlParameterSource parameters = parametersMap("bill_id", billId, "payment_status", paymentStatus.toString(),
 				"payment_method", paymentMethod.toString(), "last_update_on", Date.valueOf(LocalDate.now()));
-		
+
 		template.update("update bills set payment_status = :payment_status, payment_method = :payment_method, "
 				+ " last_update_on = :last_update_on where id = :bill_id  ", parameters);
 	}

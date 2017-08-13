@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.RoleHierarchyVoter;
@@ -21,10 +22,20 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.github.mdjc.domain.BillRepository;
+import com.github.mdjc.domain.CondoRepository;
+import com.github.mdjc.domain.OutlayRepository;
 import com.github.mdjc.domain.UserRepository;
 
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+	private static final String CONDO = "@webSecurity.checkHasAccessToCondo(authentication,#condoId)";
+	private static final String CONDO_MANAGER = "@webSecurity.checkHasAccessToCondoAsManager(authentication,#condoId)";
+	private static final String OUTLAY = "@webSecurity.checkHasAccessToOutlay(authentication,#outlayId)";
+	private static final String OUTLAY_MANAGER = "@webSecurity.checkHasAccessToOutlayAsManager(authentication,#outlayId)";
+	private static final String BILL = "@webSecurity.checkHasAccessToBill(authentication,#billId)";
+	private static final String BILL_MANAGER = "@webSecurity.checkHasAccessToBillAsManager(authentication,#billId)";
+
 	//TODO: enable csrf for production
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -36,7 +47,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
 			.and()
 			.authorizeRequests()
-				.anyRequest().authenticated()		
+				.antMatchers(HttpMethod.POST, "/condos/{condoId}/condoBills").access(CONDO_MANAGER)
+				.antMatchers(HttpMethod.POST, "/condos/{condoId}/outlays").access(CONDO_MANAGER)
+				.antMatchers("/condos/{condoId}").access(CONDO)
+				.antMatchers("/condos/{condoId}/**").access(CONDO)
+				.antMatchers(HttpMethod.DELETE, "/outlays/{outlayId}").access(OUTLAY_MANAGER)
+				.antMatchers("/outlays/{outlayId}").access(OUTLAY)
+				.antMatchers(HttpMethod.DELETE, "/condoBills/{billId}").access(BILL_MANAGER)
+				.antMatchers(HttpMethod.PATCH, "/condoBills/{billId}/payment").access(BILL_MANAGER)
+				.antMatchers("/condoBills/{billId}").access(BILL)
+				.anyRequest().authenticated()
 				.and()
 			.cors()
 			.and()
@@ -53,7 +73,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			throws Exception {
 		auth.authenticationProvider(provider);
 	}
-
 
 	@Bean
 	public AuthenticationProvider authenticationProvider(UserRepository repository) {
@@ -89,5 +108,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+    
+    @Bean
+    public WebSecurity webSecurity(CondoRepository condoRepo, OutlayRepository outlayRepo, BillRepository billRepo) {
+    	return new WebSecurity(condoRepo, outlayRepo, billRepo);
     }
 }

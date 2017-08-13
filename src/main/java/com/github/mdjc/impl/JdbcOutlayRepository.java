@@ -22,6 +22,8 @@ import com.github.mdjc.domain.OutlayCategory;
 import com.github.mdjc.domain.OutlayRepository;
 import com.github.mdjc.domain.OutlayStats;
 import com.github.mdjc.domain.PaginationCriteria;
+import com.github.mdjc.domain.Role;
+import com.github.mdjc.domain.User;
 
 public class JdbcOutlayRepository implements OutlayRepository {
 	private NamedParameterJdbcTemplate template;
@@ -37,6 +39,25 @@ public class JdbcOutlayRepository implements OutlayRepository {
 					parametersMap("outlay_id", outlayId), this::mapper);
 		} catch (EmptyResultDataAccessException e) {
 			throw new NoSuchElementException("Unexistent Outlay");
+		}
+	}
+
+	public Outlay getBy(long outlayId, User user) {
+		try {
+			if (user.getRole().equals(Role.MANAGER)) {
+				return template.queryForObject(
+						"select o.* from outlays o join condos c on c.id = o.condo "
+								+ "where manager = (select id from users where username = :username) and o.id = :outlay_id",
+						parametersMap("outlay_id", outlayId, "username", user.getUsername()), this::mapper);
+			}
+
+			return template.queryForObject(
+					"select o.* from outlays o join condos c on c.id = o.condo join apartments a on a.condo = c.id"
+							+ " where a.resident = (select id from users where username = :username) and o.id = :outlay_id",
+					parametersMap("outlay_id", outlayId, "username", user.getUsername()), this::mapper);
+
+		} catch (EmptyResultDataAccessException e) {
+			throw new NoSuchElementException("Unexistent Outlay for User's Condo");
 		}
 	}
 

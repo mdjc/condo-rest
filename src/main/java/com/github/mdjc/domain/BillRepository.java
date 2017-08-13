@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface BillRepository {
 	Bill getBy(long billId);
+	Bill getBy(long billId, User user);
 	CondoBill getCondoBilldBy(long billId);
 	BilltStats getStatsBy(long condoId, LocalDate from, LocalDate to);
 	

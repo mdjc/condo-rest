@@ -25,6 +25,8 @@ import com.github.mdjc.domain.OutlayRepository;
 import com.github.mdjc.domain.OutlayStats;
 import com.github.mdjc.domain.PaginationCriteria;
 import com.github.mdjc.domain.PaginationCriteria.SortingOrder;
+import com.github.mdjc.domain.Role;
+import com.github.mdjc.domain.User;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
@@ -52,6 +54,35 @@ public class JdbcOutlayRepositoryTest {
 	public void testGetBy_givenInvalidId_shouldThrowException() {
 		repository.getBy(69);
 	}
+	
+	@Test
+	public void testGetBy_givenValidIdAndManager_shouldReturnOutlay() {
+		long id = 4;
+		Outlay expected = new Outlay(id, OutlayCategory.SECURITY, 55.36, "Watchman & Asocs",
+				"", ImageExtension.JPG, LocalDate.of(2017, 8, 16));
+		Outlay actual = repository.getBy(id, new User("mirna", Role.MANAGER));
+		assertOutlayEquals(expected, actual);
+	}
+	
+	@Test
+	public void testGetBy_givenValidIdAndResident_shouldReturnOutlay() {
+		long id = 4;
+		Outlay expected = new Outlay(id, OutlayCategory.SECURITY, 55.36, "Watchman & Asocs",
+				"", ImageExtension.JPG, LocalDate.of(2017, 8, 16));
+		Outlay actual = repository.getBy(id, new User("john", Role.RESIDENT));
+		assertOutlayEquals(expected, actual);
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void testGetBy_givenInvalidIdForManager_shouldThrowException() {
+		repository.getBy(69, new User("mirna", Role.MANAGER));
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void testGetBy_givenInvalidIdForResident_shouldThrowException() {
+		repository.getBy(69, new User("virgi", Role.RESIDENT));
+	}
+	
 
 	@Test
 	public void testGetStatsBy_givenValidCondoFromAndTo_shouldReturnOutlay() {

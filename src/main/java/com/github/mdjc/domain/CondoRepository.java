@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface CondoRepository {
 	Condo getBy(long id);
+	Condo getBy(long id, User user);
+	
 	CondoStats getStatsByCondoId(long id);
 	
 	List<Condo> getAllByUser(User user);

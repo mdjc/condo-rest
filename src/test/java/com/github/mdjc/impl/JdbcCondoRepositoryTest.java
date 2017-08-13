@@ -52,6 +52,47 @@ public class JdbcCondoRepositoryTest {
 		repository.getBy(69);		
 	}
 	
+	
+	@Test
+	public void testGetBy_givenValidIdAndManager_shouldReturnCondo() {
+		User user = new User("luis", Role.MANAGER);
+		Condo expected = new Condo(3, "Mira Flores IV", user);
+		Condo actual = repository.getBy(3, user);
+		assertEquals(expected, actual);
+		assertEquals(expected.getName(), actual.getName());
+		assertEquals(expected.getManager(), actual.getManager());
+	}
+
+	@Test
+	public void testGetBy_givenValidIdAndResident_shouldReturnCondo() {
+		User resident = new User("mary", Role.RESIDENT);
+		Condo expected = new Condo(3, "Mira Flores IV", new User("luis", Role.MANAGER));
+		Condo actual = repository.getBy(3, resident);
+		assertEquals(expected, actual);
+		assertEquals(expected.getName(), actual.getName());
+		assertEquals(expected.getManager(), actual.getManager());
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void testGetBy_givenUnrelatedIdAndValidManager_shouldThrowException() {
+		repository.getBy(1, new User("luis", Role.MANAGER));
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void testGetBy_givenUnrelatedIdAndValidResident_shouldThrowException() {
+		repository.getBy(1, new User("mary", Role.RESIDENT));
+	}	
+	
+	@Test(expected=NoSuchElementException.class)
+	public void testGetBy_givenInvalidIdAndValidManager_shouldThrowException() {
+		repository.getBy(69, new User("luis", Role.MANAGER));
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void testGetBy_givenInvalidIdAndValidResident_shouldThrowException() {
+		repository.getBy(69, new User("mary", Role.RESIDENT));
+	}		
+	
 	@Test
 	public void testGetStatsByCondoId_givenValidId_shouldReturnStatistics() {
 		CondoStats actual = repository.getStatsByCondoId(1);
