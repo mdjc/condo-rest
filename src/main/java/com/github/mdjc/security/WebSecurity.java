@@ -22,34 +22,34 @@ public class WebSecurity {
 	}
 
 	public boolean checkHasAccessToCondo(Authentication authentication, int condoId) {
-		return isAuthenticated(authentication) && check(() -> condoRepo.getBy(condoId, user(authentication)) != null);
+		return validPrincipal(authentication) && check(() -> condoRepo.getBy(condoId, user(authentication)) != null);
 	}
 
 	public boolean checkHasAccessToCondoAsManager(Authentication authentication, int condoId) {
-		return isAuthenticated(authentication) && isManager(authentication)
+		return validPrincipal(authentication) && isManager(authentication)
 				&& checkHasAccessToCondo(authentication, condoId);
 	}
 
 	public boolean checkHasAccessToOutlay(Authentication authentication, int outlayId) {
-		return isAuthenticated(authentication) && check(() -> outlayRepo.getBy(outlayId, user(authentication)) != null);
+		return validPrincipal(authentication) && check(() -> outlayRepo.getBy(outlayId, user(authentication)) != null);
 	}
 
 	public boolean checkHasAccessToOutlayAsManager(Authentication authentication, int outlayId) {
-		return isAuthenticated(authentication) && isManager(authentication)
+		return validPrincipal(authentication) && isManager(authentication)
 				&& checkHasAccessToOutlay(authentication, outlayId);
 	}
 
 	public boolean checkHasAccessToBill(Authentication authentication, int billId) {
-		return isAuthenticated(authentication) && check(() -> billRepo.getBy(billId, user(authentication)) != null);
+		return validPrincipal(authentication) && check(() -> billRepo.getBy(billId, user(authentication)) != null);
 	}
 
 	public boolean checkHasAccessToBillAsManager(Authentication authentication, int billId) {
-		return isAuthenticated(authentication) && isManager(authentication)
+		return validPrincipal(authentication) && isManager(authentication)
 				&& checkHasAccessToBill(authentication, billId);
 	}
 
-	private boolean isAuthenticated(Authentication authentication) {
-		return authentication != null;
+	private boolean validPrincipal(Authentication authentication) {
+		return authentication.getPrincipal() instanceof User;
 	}
 
 	private boolean check(BooleanSupplier supplier) {

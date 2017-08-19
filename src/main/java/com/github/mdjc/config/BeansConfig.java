@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import com.github.mdjc.domain.ApartmentRepository;
 import com.github.mdjc.domain.BillHelper;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.CondoRepository;
@@ -13,6 +14,7 @@ import com.github.mdjc.domain.OutlayRepository;
 import com.github.mdjc.domain.UserRepository;
 import com.github.mdjc.impl.DefaultBillHelper;
 import com.github.mdjc.impl.DefaultOutlayHelper;
+import com.github.mdjc.impl.JdbcApartmentRepository;
 import com.github.mdjc.impl.JdbcBillRepository;
 import com.github.mdjc.impl.JdbcCondoRepository;
 import com.github.mdjc.impl.JdbcOutlayRepository;
@@ -34,6 +36,11 @@ public class BeansConfig {
 	@Bean
 	public CondoRepository condoRepository(NamedParameterJdbcTemplate template) {
 		return new JdbcCondoRepository(template);
+	}
+	
+	@Bean
+	public ApartmentRepository apartmentRepository(NamedParameterJdbcTemplate template) {
+		return new JdbcApartmentRepository(template);
 	}
 	
 	@Bean

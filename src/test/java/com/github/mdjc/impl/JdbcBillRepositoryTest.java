@@ -15,11 +15,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.github.mdjc.config.BeansConfig;
 import com.github.mdjc.domain.Apartment;
 import com.github.mdjc.domain.Bill;
 import com.github.mdjc.domain.BillRepository;
@@ -34,7 +32,6 @@ import com.github.mdjc.domain.User;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
-@Import(BeansConfig.class)
 public class JdbcBillRepositoryTest {
 
 	@Value("${myproperty}")

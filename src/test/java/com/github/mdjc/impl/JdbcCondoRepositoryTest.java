@@ -12,11 +12,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.github.mdjc.config.BeansConfig;
 import com.github.mdjc.domain.Apartment;
 import com.github.mdjc.domain.Condo;
 import com.github.mdjc.domain.CondoRepository;
@@ -26,7 +24,6 @@ import com.github.mdjc.domain.User;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
-@Import(BeansConfig.class)
 public class JdbcCondoRepositoryTest {
 	@Autowired
 	private NamedParameterJdbcTemplate template;
