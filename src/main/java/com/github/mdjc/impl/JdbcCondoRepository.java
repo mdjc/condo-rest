@@ -61,7 +61,7 @@ public class JdbcCondoRepository implements CondoRepository {
 			return template.queryForObject(
 					"select c.id as id, c.name as name, c.balance, u.username as manager, "
 							+ " (select count(*) from apartments where condo = c.id) as apartmentCount, "
-							+ " (select count(*) from apartments where condo = c.id and resident is null) as residentCount"
+							+ " (select count(*) from apartments where condo = c.id and resident is not null) as residentCount"
 							+ " from condos c join users u on u.id = c.manager " + " where c.id = :condo_id",
 					DBUtils.parametersMap("condo_id", condoId), this::statsMapper);
 		} catch (EmptyResultDataAccessException e) {
