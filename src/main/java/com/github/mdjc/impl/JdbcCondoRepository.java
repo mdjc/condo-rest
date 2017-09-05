@@ -13,11 +13,12 @@ import com.github.mdjc.domain.Apartment;
 import com.github.mdjc.domain.Condo;
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.CondoStats;
+import com.github.mdjc.domain.ImageExtension;
 import com.github.mdjc.domain.Role;
 import com.github.mdjc.domain.User;
 
 public class JdbcCondoRepository implements CondoRepository {
-	private static final String SELECT_CONDO_AND_MANAGER = "select c.id as id, c.name as name, u.username as manager from condos c"
+	private static final String SELECT_CONDO_AND_MANAGER = "select c.*, u.username as manager_name from condos c"
 			+ " join users u on u.id = c.manager";
 	private final NamedParameterJdbcTemplate template;
 
@@ -111,7 +112,10 @@ public class JdbcCondoRepository implements CondoRepository {
 	}
 
 	private Condo mapper(ResultSet rs, int rowNum) throws SQLException {
-		return new Condo(rs.getLong("id"), rs.getString("name"), new User(rs.getString("manager"), Role.MANAGER));
+		ImageExtension imgExtension = rs.getString("img_extension") != null
+				? ImageExtension.valueOf(rs.getString("img_extension")) : null;
+		return new Condo(rs.getLong("id"), rs.getString("name"), new User(rs.getString("manager_name"), Role.MANAGER),
+				rs.getString("address"), rs.getString("contact_name"), rs.getString("contact_phone"), imgExtension);
 	}
 
 	private CondoStats statsMapper(ResultSet rs, int rowNum) throws SQLException {

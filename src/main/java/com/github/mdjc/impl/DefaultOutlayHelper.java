@@ -1,6 +1,7 @@
 package com.github.mdjc.impl;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 
@@ -14,20 +15,20 @@ import com.github.mdjc.domain.OutlayHelper;
 import com.github.mdjc.domain.OutlayRepository;
 
 public class DefaultOutlayHelper implements OutlayHelper {
-	private final String outlaysReceiptImagesDir;
+	private final String outlayReceiptImagesDir;
 	private final OutlayRepository outlayRepo;
 	private final CondoRepository condoRepo;
 
 	public DefaultOutlayHelper(String outlaysReceiptImagesDir, OutlayRepository outlayRepository,
 			CondoRepository condoRepository) {
-		this.outlaysReceiptImagesDir = outlaysReceiptImagesDir;
+		this.outlayReceiptImagesDir = outlaysReceiptImagesDir;
 		this.outlayRepo = outlayRepository;
 		this.condoRepo = condoRepository;
 	}
 
 	@Override
 	public byte[] getReceiptImage(long outlayId) throws Exception {
-		return java.nio.file.Files.readAllBytes(Paths.get(outlaysReceiptImagesDir, String.valueOf(outlayId)));
+		return Files.readAllBytes(Paths.get(outlayReceiptImagesDir, String.valueOf(outlayId)));
 	}
 
 	@Transactional
@@ -37,7 +38,7 @@ public class DefaultOutlayHelper implements OutlayHelper {
 		Outlay outlay = new Outlay(OutlayCategory.valueOf(category), amount, supplier, comment,
 				ImageExtension.valueOf(receiptImgExtension), LocalDate.now());
 		long outlayId = outlayRepo.add(condoId, outlay);
-		java.nio.file.Files.write(Paths.get(outlaysReceiptImagesDir, String.valueOf(outlayId)), receiptImgContent);
+		Files.write(Paths.get(outlayReceiptImagesDir, String.valueOf(outlayId)), receiptImgContent);
 		condoRepo.refreshBalanceWithOutlay(outlayId, -1);
 	}
 

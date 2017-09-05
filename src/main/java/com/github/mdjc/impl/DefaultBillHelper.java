@@ -1,18 +1,19 @@
 package com.github.mdjc.impl;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.mdjc.domain.Bill;
+import com.github.mdjc.domain.BillHelper;
 import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.CondoRepository;
+import com.github.mdjc.domain.ImageExtension;
 import com.github.mdjc.domain.InvalidStatusChange;
-import com.github.mdjc.domain.BillHelper;
 import com.github.mdjc.domain.PaymentMethod;
 import com.github.mdjc.domain.PaymentStatus;
-import com.github.mdjc.domain.ImageExtension;
 
 public class DefaultBillHelper implements BillHelper {
 	private final String billsProofOfPaymentDir;
@@ -28,13 +29,13 @@ public class DefaultBillHelper implements BillHelper {
 
 	@Override
 	public byte[] getProofOfPaymentImage(long billId) throws IOException {
-		return java.nio.file.Files.readAllBytes(Paths.get(billsProofOfPaymentDir, String.valueOf(billId)));
+		return Files.readAllBytes(Paths.get(billsProofOfPaymentDir, String.valueOf(billId)));
 	}
 
 	@Override
 	public void updateBillPayment(long billId, PaymentMethod paymentMethod, ImageExtension proofOfPaymentExt,
 			byte[] proofOfPaymentContent) throws IOException {
-		java.nio.file.Files.write(Paths.get(billsProofOfPaymentDir, String.valueOf(billId)), proofOfPaymentContent);
+		Files.write(Paths.get(billsProofOfPaymentDir, String.valueOf(billId)), proofOfPaymentContent);
 		billRepository.updatePaymentInfo(billId, PaymentStatus.PAID_AWAITING_CONFIRMATION, paymentMethod,
 				proofOfPaymentExt);
 	}

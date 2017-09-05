@@ -11,6 +11,10 @@ create table condos (
 	manager int not null,
 	balance double not null default 0,
 	billing_day_of_month int,
+	address varchar(70) not null,
+	contact_name varchar(40),
+	contact_phone char(10),
+	img_extension char(3),
 	foreign	key (manager) references users(id)
 );
 
@@ -34,7 +38,7 @@ create table bills (
 	payment_status varchar(30) not null,
 	last_update_on date not null,
 	payment_method varchar(20),
-	proof_of_payment_extension varchar(3),	
+	proof_of_payment_extension char(3),	
 	foreign key(apartment) references apartments(id)
 );
 
@@ -46,7 +50,7 @@ create table outlays (
 	amount double not null,
 	supplier varchar(40) default '',
 	comment varchar(200) default '',
-	receipt_image_extension varchar(3) not null,	
+	receipt_image_extension char(3) not null,	
 	created_on date not null,
 	foreign key(condo) references condos(id)
 );

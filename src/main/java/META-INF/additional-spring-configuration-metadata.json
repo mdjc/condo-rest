@@ -8,5 +8,10 @@
     "name": "app.outlays.receipt.images.directory",
     "type": "java.lang.String",
     "description": "Directory to store outlays' receipt images"
+  },
+  {
+    "name": "app.condos.images.directory",
+    "type": "java.lang.String",
+    "description": "Directory to store condos' images"
   }
 ]}
