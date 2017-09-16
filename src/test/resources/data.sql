@@ -6,10 +6,10 @@ insert into users (username, password, role)  values('aldo', '$2a$10$nZAnnVBnl0r
 insert into users (username, password, role)  values('john', '$2a$10$nZAnnVBnl0r23Iii2FBUPOJNcCFL9x9MakFDdlzw2vbN5tUeWcHui', 'RESIDENT');
 insert into users (username, password, role)  values('mary', '$2a$10$nZAnnVBnl0r23Iii2FBUPOJNcCFL9x9MakFDdlzw2vbN5tUeWcHui', 'RESIDENT');
 
-insert into condos (name, manager, balance, billing_day_of_month, address, contact_name, contact_phone, img_extension) values ('Shadai I', (select id from users where username='mirna' and role='MANAGER'), 100, 15, 'Calle Bartolo #15, Santo Domingo', 'juan', '8096169980', 'JPG');
-insert into condos (name, manager, balance, billing_day_of_month, address, contact_name, contact_phone) values ('Loring  Place 2333', (select id from users where username='mirna' and role='MANAGER'), 50, 1, 'Calle Bartolo #16, Santo Domingo', 'pedro', '8096169980');
-insert into condos (name, manager, balance, billing_day_of_month, address, contact_name, contact_phone) values ('Mira Flores IV', (select id from users where username='luis' and role='MANAGER'), 220, 1, 'Calle Bartolo #17, Santo Domingo', 'maria', '8096169980');
-insert into condos (name, manager, balance, billing_day_of_month, address, contact_name, contact_phone) values('Baldwing IV', (select id from users where username='luis' and role='MANAGER'), 0, 1, 'Calle Bartolo #18, Santo Domingo', 'jose', '8096169980');
+insert into condos (name, manager, balance, address, contact_name, contact_phone, billing_day_of_month,  img_extension) values ('Shadai I', (select id from users where username='mirna' and role='MANAGER'), 100, 'Calle Bartolo #15, Santo Domingo', 'juan', '8096169980', 15, 'JPG');
+insert into condos (name, manager, balance, address, contact_name, contact_phone, billing_day_of_month, img_extension) values ('Loring  Place 2333', (select id from users where username='mirna' and role='MANAGER'), 50, 'Calle Bartolo #16, Santo Domingo', 'pedro', '8096169980', 1, 'PNG');
+insert into condos (name, manager, balance, address, contact_name, contact_phone, billing_day_of_month, img_extension) values ('Mira Flores IV', (select id from users where username='luis' and role='MANAGER'), 220, 'Calle Bartolo #17, Santo Domingo', 'maria', '8096169980', 1, 'PNG');
+insert into condos (name, manager, balance, address, contact_name, contact_phone, billing_day_of_month, img_extension) values('Baldwing IV', (select id from users where username='luis' and role='MANAGER'), 0, 'Calle Bartolo #18, Santo Domingo', 'jose', '8096169980', 1, 'PNG');
 
 insert into apartments (name, condo, resident, monthly_share) values ('1A', (select id from condos where name = 'Shadai I'), (select id from users where username='virgi'), 10);
 insert into apartments (name, condo, resident, monthly_share) values ('1B', (select id from condos where name = 'Shadai I'), null, 10);

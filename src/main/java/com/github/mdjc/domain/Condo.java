@@ -9,23 +9,17 @@ public class Condo {
 	private final String address;
 	private final String contactName;
 	private final String contactPhone;
+	private final int billingDayOfMonth;
 	private final ImageExtension imageExtension;
 	
-	public Condo(long id, String name, User manager, String address) {
-		this(id, name, manager, address, null, null, null);
-	}
-	
-	public Condo(long id, String name, User manager, String address, String contactName, String contactPhone) {
-		this(id, name, manager, address, contactName, contactPhone, null);
-	}
-	
-	public Condo(long id, String name, User manager, String address, String contactName, String contactPhone, ImageExtension imageExtension) {
+	public Condo(long id, String name, User manager, String address, String contactName, String contactPhone, int billingDayOfMonth, ImageExtension imageExtension) {
 		this.id = Arguments.checkPositive(id);
 		this.name = Arguments.checkBlank(name);
 		this.manager = Arguments.checkNull(manager);
 		this.address = Arguments.checkBlank(address);
 		this.contactName = contactName;
 		this.contactPhone = contactPhone;
+		this.billingDayOfMonth = billingDayOfMonth;
 		this.imageExtension = imageExtension;
 	}
 
@@ -55,6 +49,10 @@ public class Condo {
 
 	public ImageExtension getImageExtension() {
 		return imageExtension;
+	}	
+
+	public int getBillingDayOfMonth() {
+		return billingDayOfMonth;
 	}
 
 	@Override

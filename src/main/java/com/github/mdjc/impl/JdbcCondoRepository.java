@@ -115,7 +115,8 @@ public class JdbcCondoRepository implements CondoRepository {
 		ImageExtension imgExtension = rs.getString("img_extension") != null
 				? ImageExtension.valueOf(rs.getString("img_extension")) : null;
 		return new Condo(rs.getLong("id"), rs.getString("name"), new User(rs.getString("manager_name"), Role.MANAGER),
-				rs.getString("address"), rs.getString("contact_name"), rs.getString("contact_phone"), imgExtension);
+				rs.getString("address"), rs.getString("contact_name"), rs.getString("contact_phone"),
+				rs.getInt("billing_day_of_month"), imgExtension);
 	}
 
 	private CondoStats statsMapper(ResultSet rs, int rowNum) throws SQLException {

@@ -38,7 +38,8 @@ public class JdbcCondoRepositoryTest {
 	@Test
 	public void testGetBy_givenValidId_shouldReturnCondo() {
 		User user = new User("luis", Role.MANAGER);
-		Condo expected = new Condo(3, "Mira Flores IV", user, "Calle Bartolo #17, Santo Domingo", "maria", "8096169980");
+		Condo expected = new Condo(3, "Mira Flores IV", user, "Calle Bartolo #17, Santo Domingo", "maria", "8096169980",
+				1, ImageExtension.PNG);
 		Condo actual = repository.getBy(3);
 		assertCondoEquals(expected, actual);
 	}
@@ -51,7 +52,8 @@ public class JdbcCondoRepositoryTest {
 	@Test
 	public void testGetBy_givenValidIdAndManager_shouldReturnCondo() {
 		User user = new User("luis", Role.MANAGER);
-		Condo expected = new Condo(3, "Mira Flores IV", user, "Calle Bartolo #17, Santo Domingo", "maria", "8096169980");
+		Condo expected = new Condo(3, "Mira Flores IV", user, "Calle Bartolo #17, Santo Domingo", "maria", "8096169980",
+				1, ImageExtension.PNG);
 		Condo actual = repository.getBy(3, user);
 		assertCondoEquals(expected, actual);
 	}
@@ -60,7 +62,7 @@ public class JdbcCondoRepositoryTest {
 	public void testGetBy_givenValidIdAndResident_shouldReturnCondo() {
 		User resident = new User("mary", Role.RESIDENT);
 		Condo expected = new Condo(3, "Mira Flores IV", new User("luis", Role.MANAGER),
-				"Calle Bartolo #17, Santo Domingo", "maria", "8096169980");
+				"Calle Bartolo #17, Santo Domingo", "maria", "8096169980", 1, ImageExtension.PNG);
 		Condo actual = repository.getBy(3, resident);
 		assertCondoEquals(expected, actual);
 	}
@@ -98,8 +100,11 @@ public class JdbcCondoRepositoryTest {
 	@Test
 	public void testGetAllByUser_givenManager_shouldReturnTwoCondo() {
 		User user = new User("luis", Role.MANAGER);
-		List<Condo> expected = Arrays.asList(new Condo(4, "Baldwing IV", user, "Calle Bartolo #18, Santo Domingo", "jose", "8096169980"),
-				new Condo(3, "Mira Flores IV", user, "Calle Bartolo #17, Santo Domingo", "maria", "8096169980"));
+		List<Condo> expected = Arrays.asList(
+				new Condo(4, "Baldwing IV", user, "Calle Bartolo #18, Santo Domingo", "jose", "8096169980", 1,
+						ImageExtension.PNG),
+				new Condo(3, "Mira Flores IV", user, "Calle Bartolo #17, Santo Domingo", "maria", "8096169980", 1,
+						ImageExtension.PNG));
 		List<Condo> actual = repository.getAllByUser(user);
 		assertEquals(expected, actual);
 	}
@@ -107,7 +112,8 @@ public class JdbcCondoRepositoryTest {
 	@Test
 	public void testGetAllByUser_givenResident_shouldReturnOneCondo() {
 		User user = new User("virgi", Role.RESIDENT);
-		List<Condo> expected = Arrays.asList(new Condo(1, "Shadai I", user, "Calle Bartolo #15, Santo Domingo", "juan", "8096169980", ImageExtension.PNG));
+		List<Condo> expected = Arrays.asList(new Condo(1, "Shadai I", user, "Calle Bartolo #15, Santo Domingo", "juan",
+				"8096169980", 15, ImageExtension.JPG));
 		List<Condo> actual = repository.getAllByUser(user);
 		assertEquals(expected, actual);
 	}
@@ -116,8 +122,10 @@ public class JdbcCondoRepositoryTest {
 	public void testGetAllByUser_givenManager_shouldReturnSeveralCondos() {
 		User user = new User("mirna", Role.MANAGER);
 		List<Condo> expected = Arrays.asList(
-				new Condo(2, "Loring  Place 2333", user, "Calle Bartolo #16, Santo Domingo", "pedro", "8096169980"),
-				new Condo(1, "Shadai I", user, "Calle Bartolo #15, Santo Domingo", "juan", "8096169980", ImageExtension.PNG));
+				new Condo(2, "Loring  Place 2333", user, "Calle Bartolo #16, Santo Domingo", "pedro", "8096169980", 1,
+						ImageExtension.PNG),
+				new Condo(1, "Shadai I", user, "Calle Bartolo #15, Santo Domingo", "juan", "8096169980", 15,
+						ImageExtension.JPG));
 		List<Condo> actual = repository.getAllByUser(user);
 		assertEquals(expected, actual);
 	}
@@ -126,8 +134,10 @@ public class JdbcCondoRepositoryTest {
 	public void testGetAllByUser_givenResident_shouldReturnSeveralCondos() {
 		User user = new User("mary", Role.RESIDENT);
 		List<Condo> expected = Arrays.asList(
-				new Condo(2, "Loring  Place 2333", new User("mirna", Role.MANAGER), "Calle Bartolo #16, Santo Domingo", "pedro", "8096169980"),
-				new Condo(3, "Mira Flores IV", new User("luis", Role.MANAGER), "Calle Bartolo #17, Santo Domingo", "maria", "8096169980"));
+				new Condo(2, "Loring  Place 2333", new User("mirna", Role.MANAGER), "Calle Bartolo #16, Santo Domingo",
+						"pedro", "8096169980", 1, ImageExtension.PNG),
+				new Condo(3, "Mira Flores IV", new User("luis", Role.MANAGER), "Calle Bartolo #17, Santo Domingo",
+						"maria", "8096169980", 1, ImageExtension.PNG));
 		List<Condo> actual = repository.getAllByUser(user);
 		assertEquals(expected, actual);
 	}
@@ -218,6 +228,7 @@ public class JdbcCondoRepositoryTest {
 		assertEquals(expected.getAddress(), actual.getAddress());
 		assertEquals(expected.getContactName(), actual.getContactName());
 		assertEquals(expected.getContactPhone(), actual.getContactPhone());
+		assertEquals(expected.getBillingDayOfMonth(), actual.getBillingDayOfMonth());
 		assertEquals(expected.getImageExtension(), actual.getImageExtension());
 	}
 }
