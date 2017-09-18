@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.mdjc.domain.Apartment;
+import com.github.mdjc.domain.ApartmentPastDueDebt;
 import com.github.mdjc.domain.Condo;
 import com.github.mdjc.domain.CondoHelper;
 import com.github.mdjc.domain.CondoRepository;
@@ -65,5 +66,10 @@ public class CondoRest {
 	@GetMapping(path = "/condos/{condoId}/apartments")
 	public List<Apartment> condoApartments(@PathVariable long condoId) {
 		return condoRepo.getCondoApartments(condoId);
+	}
+	
+	@GetMapping(path = "/condos/{condoId}/aparatmentPastDueDebts")
+	public List<ApartmentPastDueDebt> condoApartmentDebts(@PathVariable long condoId) {
+		return condoRepo.getCondoApartmentPastDueDebts(condoId);
 	}
 }

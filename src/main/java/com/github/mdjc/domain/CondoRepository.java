@@ -10,6 +10,7 @@ public interface CondoRepository {
 	
 	List<Condo> getAllByUser(User user);
 	List<Apartment> getCondoApartments(long condoId);
+	List<ApartmentPastDueDebt> getCondoApartmentPastDueDebts(long condoId);
 	
 	void refreshBalanceWithBill(long billId, int sign);
 	void refreshBalanceWithOutlay(long outlayId, int sign);

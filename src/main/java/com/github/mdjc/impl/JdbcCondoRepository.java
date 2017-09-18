@@ -2,18 +2,23 @@ package com.github.mdjc.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import com.github.mdjc.commons.db.DBUtils;
 import com.github.mdjc.domain.Apartment;
+import com.github.mdjc.domain.ApartmentPastDueDebt;
 import com.github.mdjc.domain.Condo;
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.CondoStats;
 import com.github.mdjc.domain.ImageExtension;
+import com.github.mdjc.domain.PaymentStatus;
 import com.github.mdjc.domain.Role;
 import com.github.mdjc.domain.User;
 
@@ -95,6 +100,19 @@ public class JdbcCondoRepository implements CondoRepository {
 	}
 
 	@Override
+	public List<ApartmentPastDueDebt> getCondoApartmentPastDueDebts(long condoId) {
+		return template.query(
+				"select a.name as apartment, r.username as resident, sum(due_amount) as debt" + " from bills b "
+						+ " join apartments a on b.apartment = a.id" + " join users r on a.resident = r.id"
+						+ " where payment_status in (:payment_status_list) and due_date < current_date and a.condo = :condo_id"
+						+ " group by a.id, a.name, r.username" + " order by a.name",
+				DBUtils.parametersMap("condo_id", condoId, "payment_status_list",
+						Arrays.asList(PaymentStatus.PENDING.toString(), PaymentStatus.REJECTED.toString()),
+						"current_date", LocalDate.now()),
+				this::apartmentDebtMapMapper);
+	}
+
+	@Override
 	public void refreshBalanceWithBill(long billId, int sign) {
 		template.update(
 				"update condos set balance = balance + (:sign * (select b.due_amount from bills b where b.id = :bill_id))"
@@ -129,4 +147,10 @@ public class JdbcCondoRepository implements CondoRepository {
 		return new Apartment(rs.getString("name"), resident);
 	}
 
+	private ApartmentPastDueDebt apartmentDebtMapMapper(ResultSet rs, int rowNum)
+			throws SQLException, DataAccessException {
+		Apartment apartment = new Apartment(rs.getString("apartment"),
+				new User(rs.getString("resident"), Role.RESIDENT));
+		return new ApartmentPastDueDebt(apartment, rs.getDouble("debt"));
+	}
 }

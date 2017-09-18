@@ -3,6 +3,8 @@ package com.github.mdjc.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -16,7 +18,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.github.mdjc.domain.Apartment;
+import com.github.mdjc.domain.ApartmentPastDueDebt;
+import com.github.mdjc.domain.BillRepository;
 import com.github.mdjc.domain.Condo;
+import com.github.mdjc.domain.CondoBill;
 import com.github.mdjc.domain.CondoRepository;
 import com.github.mdjc.domain.CondoStats;
 import com.github.mdjc.domain.ImageExtension;
@@ -29,10 +34,12 @@ public class JdbcCondoRepositoryTest {
 	@Autowired
 	private NamedParameterJdbcTemplate template;
 	private CondoRepository repository;
+	private BillRepository billRepository;
 
 	@Before
 	public void init() {
 		repository = new JdbcCondoRepository(template);
+		billRepository = new JdbcBillRepository(template);
 	}
 
 	@Test
@@ -162,6 +169,18 @@ public class JdbcCondoRepositoryTest {
 	@Test
 	public void testGetCondoApartmentsGivenValidCondo_shouldReturnEmpyList() {
 		assertTrue(repository.getCondoApartments(69).isEmpty());
+	}
+
+	@Test
+	public void testGetCondoApartmentPastDueDebts_shouldReturnMap() {
+		billRepository.add(2, new CondoBill("test bill 1", LocalDate.of(2016, 3, 1), 200, new Apartment("2")));
+		billRepository.add(2, new CondoBill("test bill 1", LocalDate.of(2016, 4, 1), 100, new Apartment("2")));
+
+		List<ApartmentPastDueDebt> expected = new ArrayList<>();
+		expected.add(new ApartmentPastDueDebt(new Apartment("1", new User("john", Role.RESIDENT)), 5.55));
+		expected.add(new ApartmentPastDueDebt(new Apartment("2", new User("mary", Role.RESIDENT)), 310D));
+		List<ApartmentPastDueDebt> actual = repository.getCondoApartmentPastDueDebts(2);
+		assertEquals(expected, actual);
 	}
 
 	@Test(expected = NoSuchElementException.class)
